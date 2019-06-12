@@ -49,33 +49,21 @@ class MpesaController extends Controller
 
         try {
             $res = STK($request->phone, $request->amount, $request->reference);
-            if($res){
-                $data['ref']            = $res['transactionID'];
-                $data['paid_status']    = 'Pending';
-                $data['session']        = 1;
+
+            if(!isset($res['errorCode'])){
+                $data['ref']            = $res->MerchantRequestID;
                 $payment                = Payment::create($data);
         
                 if($payment){
-                    toast(ucwords(__('details saved successfully')), 'success', 'bottom-right');
-                    
-                    try {
-                        $AT       = new AfricasTalking(Setting::sms('api_username', 'schooliq'), Setting::sms('api_key', '97ca15305d52f5113374ea80ae5e4718ebca840099c9d6b7b5dc63b3d0fc1634'));
-                        $sms      = $AT->sms();
-                        $sms->send([
-                            'to'      => $payment->user->phone,
-                            'message' => 'Your payment of '.Setting::general('currency', 'KEN').' '.$payment->amount.'has been received'
-                        ]);
-                    } catch (\Throwable $th) {
-                        toast(ucwords(__('failed to send sms')), 'error', 'bottom-right');
-                    }
+                    return array('msg' => 'saved' );
                 } else {
-                    toast(ucwords(__('failed to create record')), 'error', 'bottom-right');
+                    return array('msg' => 'failed' );
                 }
 
                 return Redirect::back();
             }
-        } catch (\Throwable $th) {
-            toast(ucwords(__('failed to create record')), 'error', 'bottom-right');
+        } catch (\Exception $e) {
+            return array('msg' => $e->getMessage );
             return Redirect::back();
         }
     }
@@ -83,15 +71,15 @@ class MpesaController extends Controller
     public function reconcile(Request $request, $method = 'mpesa')
     {
         if ($method == 'mpesa') {
-            $response = STK::reconcile($request->all());
-
-            $transaction = $response['transID'];
-
-            $payment = Payment::whereRef($transaction)->first();
-
-            $payment->mpesa = $response['reference'];
-
-            if ($payment->update()) {
+            $response = STK::reconcile($request->getContent(), function ($data)
+            {
+                $response = json_decode( $data, true );
+                return isset( $response['Body']['stkCallback'] ) ? $response['Body']['stkCallback'] : null;
+            });
+            
+            $payment = Payment::where('mpesa', $response['MerchantRequestID'])->first();
+            $payment->status = 'Paid';
+            if ($payment->save()) {
                 return array('status' => 0);
             }
         }

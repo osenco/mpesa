@@ -1,5 +1,6 @@
 # Mpesa PHP SDK
 Intuitive, Dynamic Mpesa PHP SDK
+
 Supported APIs include STK, C2B, B2C, B2B, as well as balance and status check, and reversal.
 
 ## Installation

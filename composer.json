@@ -1,6 +1,7 @@
     {
         "name": "osenco/mpesa",
         "description": "Mpesa SDK for PHP Apps",
+        "version": "0.2.0",
         "license": "MIT",
         "authors": [
             {
