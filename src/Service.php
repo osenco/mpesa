@@ -170,7 +170,7 @@ class Service
 		return array( 'Registration status' => $status );
     }
 
-    public static function validate( $callback, $data )
+    public static function validate( $callback = null, $data = null )
 	{
 	    if( is_null( $callback) ){
 		    return array( 

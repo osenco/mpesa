@@ -9,23 +9,23 @@ if (!function_exists('setup_mpesa')) {
 }
 
 if (!function_exists('stk_push')) {
-	function stk_push()
+	function stk_push($phone, $amount, $reference)
 	{
-		return \Osen\Mpesa\STK();
+		return \Osen\Mpesa\STK($phone, $amount, $reference);
 	}
 }
 
 if (!function_exists('c2b_request')) {
-	function c2b_request()
+	function c2b_request($phone, $amount, $reference)
 	{
-		return \Osen\Mpesa\C2B();
+		return \Osen\Mpesa\C2B($phone, $amount, $reference);
 	}
 }
 
 if (!function_exists('b2c_request')) {
-	function b2c_request()
+	function b2c_request($phone, $amount, $reference)
 	{
-		return \Osen\Mpesa\B2C();
+		return \Osen\Mpesa\B2C($phone, $amount, $reference);
 	}
 }
 
