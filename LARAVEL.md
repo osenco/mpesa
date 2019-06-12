@@ -11,7 +11,8 @@ We will need a controller to handle MPesa Transactions and save them to a databa
 
 In your controller's constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 
 
-`STK::init(
+````php
+STK::init(
     array(
         'env'               => 'sandbox',
         'type'              => 4,
@@ -26,27 +27,39 @@ In your controller's constructor, instantiate the Mpesa API class you want to us
         'callback_url'      => url('mpesa/reconcile'),
         'timeout_url'       => url('mpesa/timeout'),
     )
-);`
+);
+````
 
 ### Making A Payment Request
 Wrap your request in a try catch to ensure proper error handling
 
-`try {
+```php
+try {
     return $res = STK($phone, $amount, $reference);
 } catch (\Throwable $th) {
     return $th
 }
-`
+```
+## Helper Functions
+
+You can use our helper functions for shorter code
+`setup_mpesa`
+`stk_push`
+`c2b_request
+`b2c_request`
+`b2b_request`
 
 ## Routing and Endpoints
 
 You can set your laravel routes so as to create endpoints for interaction between Mpesa and your Laravel Installation
 
-`Route::prefix('mpesa')->group(function ()
+```php
+Route::prefix('mpesa')->group(function ()
 {
   Route::get('pay', 'MpesaController@pay');
   Route::get('validate', 'MpesaController@validation');
   Route::get('confirm', 'MpesaController@confirmation');
-});`
+});
+```
 
 Note that you need to call the API validation and confirmation methods (see examples/MpesaController.php)

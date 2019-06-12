@@ -30,3 +30,11 @@ Wrap your request in a try catch to ensure proper error handling
     return $th
 }
 `
+## Helper Functions
+
+You can use our helper functions for shorter code
+`setup_mpesa`
+`stk_push`
+`c2b_request
+`b2c_request`
+`b2b_request`
