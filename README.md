@@ -9,6 +9,8 @@ Install via composer by typing in your terminal
 composer require osenco/mpesa
 ```
 
+For Laravel Usesrs, there is a detailed guide [here](LARAVEL.MD) as well as a sample [controller.php](examples/MpesaController.php)
+
 ### Import Class Namespace
 Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice
 ```php

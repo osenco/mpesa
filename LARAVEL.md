@@ -2,7 +2,7 @@
 
 ## The Mpesa Controller
 
-We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See examples/MpesaController.php for sample code
+We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See [examples/MpesaController.php](examples/MpesaController.php) for sample code
 
 ```bash
 php artisan make:controller MpesaController
