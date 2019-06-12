@@ -1,11 +1,12 @@
-# mpesa
-Intuitive, Dynamic Mpesa PHP SDK
-
-Supported APIs include STK, C2B, B2C, B2B, as well as balance and status check, and reversal.
+# Sample Controller For Laravel
 
 ## The Mpesa Controller
 
 We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See examples/MpesaController.php for sample code
+
+```bash
+php artisan make:controller MpesaController
+```
 
 ### Instantiating The Class
 

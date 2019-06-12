@@ -1,10 +1,17 @@
-# mpesa
+# Mpesa PHP SDK
 Intuitive, Dynamic Mpesa PHP SDK
-
 Supported APIs include STK, C2B, B2C, B2B, as well as balance and status check, and reversal.
 
+## Installation
+Install via composer by typing in your terminal
+
+```bash
+composer require osenco/mpesa
+```
+
 ## Instantiating The Class
-`STK::init(
+```php
+STK::init(
     array(
         'env'               => 'sandbox',
         'type'              => 4,
@@ -19,17 +26,19 @@ Supported APIs include STK, C2B, B2C, B2B, as well as balance and status check, 
         'callback_url'      => url('mpesa/reconcile'),
         'timeout_url'       => url('mpesa/timeout'),
     )
-);`
+);
+```
 
 ## Making A Payment Request
 Wrap your request in a try catch to ensure proper error handling
 
-`try {
+```php
+try {
     return $res = STK($phone, $amount, $reference);
 } catch (\Throwable $th) {
     return $th
 }
-`
+```
 ## Helper Functions
 
 You can use our helper functions for shorter code
