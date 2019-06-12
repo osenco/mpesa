@@ -11,27 +11,27 @@ if (!function_exists('setup_mpesa')) {
 if (!function_exists('stk_push')) {
 	function stk_push()
 	{
-		return \Osen\Mpesa\STK::request();
+		return \Osen\Mpesa\STK();
 	}
 }
 
 if (!function_exists('c2b_request')) {
 	function c2b_request()
 	{
-		return \Osen\Mpesa\C2B::request();
+		return \Osen\Mpesa\C2B();
 	}
 }
 
 if (!function_exists('b2c_request')) {
 	function b2c_request()
 	{
-		return \Osen\Mpesa\B2C::request();
+		return \Osen\Mpesa\B2C();
 	}
 }
 
 if (!function_exists('b2b_request')) {
 	function b2b_request()
 	{
-		return \Osen\Mpesa\B2B::request();
+		return \Osen\Mpesa\B2B();
 	}
 }
