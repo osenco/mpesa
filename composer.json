@@ -1,0 +1,21 @@
+    {
+        "name": "osenco/mpesa",
+        "description": "Mpesa SDK for PHP Apps",
+        "license": "MIT",
+        "authors": [
+            {
+                "name": "Osen Concepts",
+                "email": "hi@osen.co.ke"
+            }
+        ],
+        "minimum-stability": "dev",
+        "require": {
+            "php": ">=7.0"
+        },
+        "autoload": {
+            "psr-0": {
+                "Osen": "src/"
+            },
+            "files": ["src/helpers.php"]
+        }
+    }
