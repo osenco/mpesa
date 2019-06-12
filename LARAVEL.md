@@ -8,6 +8,11 @@ We will need a controller to handle MPesa Transactions and save them to a databa
 php artisan make:controller MpesaController
 ```
 
+### Import Class Namespace
+```php
+use Osen\Mpesa\STK;
+```
+
 ### Instantiating The Class
 
 In your controller's constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 

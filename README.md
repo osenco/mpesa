@@ -9,7 +9,13 @@ Install via composer by typing in your terminal
 composer require osenco/mpesa
 ```
 
-## Instantiating The Class
+### Import Class Namespace
+Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice
+```php
+use Osen\Mpesa\STK;
+```
+
+## Instantiating The Class 
 ```php
 STK::init(
     array(
@@ -17,10 +23,10 @@ STK::init(
         'type'              => 4,
         'shortcode'         => '173527',
         'honumber'          => '173527',
-        'key'               => Setting::mpesa('key'),
-        'secret'            => Setting::mpesa('secret'),
+        'key'               => 'Your Consumer Key',
+        'secret'            => 'Your Consumer Secret',
         'username'          => '',
-        'passkey'           => Setting::mpesa('passkey'),
+        'passkey'           => 'Your Online Passkey',
         'validation_url'    => url('mpesa/validate'),
         'confirmation_url'  => url('mpesa/confirm'),
         'callback_url'      => url('mpesa/reconcile'),
@@ -42,8 +48,32 @@ try {
 ## Helper Functions
 
 You can use our helper functions for shorter code
-`setup_mpesa`
-`stk_push`
-`c2b_request
-`b2c_request`
-`b2b_request`
+```php
+$config = array(
+    'env'               => 'sandbox',
+    'type'              => 4, // or 1, 2
+    'shortcode'         => '173527',
+    'honumber'          => '173527',
+    'key'               => 'Your Consumer Key',
+    'secret'            => 'Your Consumer Secret',
+    'username'          => '',
+    'passkey'           => 'Your Online Passkey',
+    'validation_url'    => url('mpesa/validate'),
+    'confirmation_url'  => url('mpesa/confirm'),
+    'callback_url'      => url('mpesa/reconcile'),
+    'timeout_url'       => url('mpesa/timeout'),
+);
+setup_mpesa($config);
+```
+```php
+stk_push($phone, $amount, $reference);
+```
+```php
+c2b_request($phone, $amount, $reference);
+```
+```php
+b2c_request
+```
+```php
+b2b_request
+```
