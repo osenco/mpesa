@@ -24,7 +24,7 @@ class MpesaController extends Controller
                 'env'               => 'sandbox',
                 'type'              => 4,
                 'shortcode'         => '173527',
-                'honumber'          => '173527',
+                'headoffice'          => '173527',
                 'key'               => 'Your Consumer Key',
                 'secret'            => 'Your Consumer Secret',
                 'username'          => '',
@@ -46,6 +46,8 @@ class MpesaController extends Controller
     public function pay(Request $request)
     {
         $data = $request->all();
+
+        exit(var_dump(STK));
 
         try {
             $res = STK($request->phone, $request->amount, $request->reference);

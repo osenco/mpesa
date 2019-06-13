@@ -2,13 +2,13 @@
 
 ## The Mpesa Controller
 
-We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See [examples/MpesaController.php](examples/MpesaController.php) for sample code
+We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See [this example](examples/MpesaController.php) for sample code.
 
 ```bash
 php artisan make:controller MpesaController
 ```
 
-### Import Class Namespace
+### Import Class With Namespace
 ```php
 use Osen\Mpesa\STK;
 ```
@@ -22,8 +22,8 @@ STK::init(
     array(
         'env'               => 'sandbox',
         'type'              => 4,
-        'shortcode'         => '173527',
-        'honumber'          => '173527',
+        'shortcode'         => '174379',
+        'headoffice'        => '174379',
         'key'               => 'Your Consumer Key',
         'secret'            => 'Your Consumer Secret',
         'username'          => '',
@@ -36,36 +36,17 @@ STK::init(
 );
 ````
 
-### Making A Payment Request
-Wrap your request in a try catch to ensure proper error handling
-
-```php
-try {
-    return $res = STK($phone, $amount, $reference);
-} catch (\Throwable $th) {
-    return $th
-}
-```
-## Helper Functions
-
-You can use our helper functions for shorter code
-`setup_mpesa`
-`stk_push`
-`c2b_request
-`b2c_request`
-`b2b_request`
-
 ## Routing and Endpoints
 
-You can set your laravel routes so as to create endpoints for interaction between Mpesa and your Laravel Installation
+You can set your laravel routes so as to create endpoints for interaction between Mpesa and your Laravel Installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
 
 ```php
 Route::prefix('mpesa')->group(function ()
 {
-  Route::get('pay', 'MpesaController@pay');
-  Route::get('validate', 'MpesaController@validation');
-  Route::get('confirm', 'MpesaController@confirmation');
+  Route::any('pay', 'MpesaController@pay');
+  Route::any('validate', 'MpesaController@validation');
+  Route::any('confirm', 'MpesaController@confirmation');
+  Route::any('timeout', 'MpesaController@timeout');
 });
 ```
-
-Note that you need to call the API validation and confirmation methods (see examples/MpesaController.php)
+See [the README](README.md) for making and processing payment requests.
