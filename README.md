@@ -24,7 +24,7 @@ Intuitive, Dynamic Mpesa PHP SDK
         </tr>
         <tr>
             <td>B2B - Business To Business</td>
-            <td></td>
+            <td>Payment For Supplies</td>
         </tr>
         <tr>
             <td>Account Balance Check</td>
@@ -52,7 +52,7 @@ For Laravel Usesrs, there is a detailed guide [here](LARAVEL.md) as well as a sa
 
 ## Usage
 ### Import Class With Namespace
-Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice
+Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice. We will be using STK here.
 
 ```php
 use Osen\Mpesa\STK;
@@ -70,12 +70,12 @@ STK::init(
         'headoffice'        => '174379',
         'key'               => 'Your Consumer Key',
         'secret'            => 'Your Consumer Secret',
-        'username'          => '',
         'passkey'           => 'Your Online Passkey',
         'validation_url'    => url('mpesa/validate'),
         'confirmation_url'  => url('mpesa/confirm'),
         'callback_url'      => url('mpesa/reconcile'),
         'timeout_url'       => url('mpesa/timeout'),
+        'results_url'       => url('mpesa/results'),
     )
 );
 ```
@@ -87,7 +87,7 @@ Wrap your request in a try catch to ensure proper error handling
 try {
     return $res = STK::send($phone, $amount, $reference);
 } catch (\Throwable $th) {
-    return $th
+    return $th;
 }
 ```
 
@@ -99,19 +99,64 @@ STK::confirm();
 STK::validate();
 ```
 
-These functions take two optional arguments for data sent by mpesa to your endpoint, and a callback function that processes the response. If neither is provided, the function will return true. Note that you can either supply both arguments, or none at all. The callback function can either be a defined funtion closure(anonymous)
+These functions take an optional argument for a callback function that processes the response. If none is provided, the function will return a succesful response. The callback function can either be a defined funtion closure(anonymous)
 
 ```php
 function validate_data($data){
     // Process data
     return true;
 }
-STK::validate($data, 'validate_data');
+STK::validate('validate_data');
 ```
 
 ```php
-STK::confirm($data, function(){
+STK::confirm(function($data){
     // Process $data
+    return true;
+});
+```
+
+## Reconciling The Payment
+The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data The callback function can either be a defined funtion closure(anonymous). If ommited, the method will return a successful response by default.
+
+```php
+STK::reconcile();
+```
+
+```php
+STK::reconcile(function($data){
+    // Process $data
+    return true;
+});
+```
+
+### Timeouts
+Sometimes the system times out.
+
+```php
+STK::timeout();
+```
+
+This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
+
+```php
+STK::timeout(function($data){
+    // Process results
+    return true;
+});
+```
+
+### Processing Results
+There are scenarios when Safaricom needs to send data to your application. This could be when you make a balance query, or transaction status check.
+
+```php
+STK::results();
+```
+
+This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
+```php
+STK::results(function($data){
+    // Process results
     return true;
 });
 ```
@@ -137,7 +182,7 @@ $config = array(
     'validation_url'    => url('mpesa/validate'),
     'confirmation_url'  => url('mpesa/confirm'),
     'callback_url'      => url('mpesa/reconcile'),
-    'timeout_url'       => url('mpesa/timeout'),
+    'results_url'       => url('mpesa/results'),
 );
 mpesa_setup_config($config, 'STK');
 ```

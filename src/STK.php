@@ -11,9 +11,8 @@ class STK extends Service
     {
         $token = parent::token();
         
-		// Remove the plus sign before the customer's phone number if present
-		if (substr($phone, 0,1) == '+') $phone = str_replace('+', '', $phone);
-		if (substr($phone, 0,1) == '0') $phone = preg_replace('/^0/', '254', $phone);
+		$phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
+		$phone = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
         
 		$endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest' : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 		$timestamp = date('YmdHis');
@@ -25,7 +24,7 @@ class STK extends Service
             'BusinessShortCode' => parent::$config->headoffice,
             'Password' 			=> $password,
             'Timestamp' 		=> $timestamp,
-            'TransactionType' 	=> 'CustomerPayBillOnline',
+            'TransactionType' 	=> (parent::$config->type == 4) ? 'CustomerPayBillOnline' : 'CustomerBuyGoodsOnline',
             'Amount' 			=> round($amount),
             'PartyA' 			=> $phone,
             'PartyB' 			=> parent::$config->shortcode,
@@ -44,5 +43,5 @@ class STK extends Service
 		
 		return json_decode($response);
     }
-    
+
 }

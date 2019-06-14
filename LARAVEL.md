@@ -19,20 +19,21 @@ In your controller's constructor, instantiate the Mpesa API class you want to us
 
 ````php
 STK::init(
-    array(
-        'env'               => 'sandbox',
-        'type'              => 4,
-        'shortcode'         => '174379',
-        'headoffice'        => '174379',
-        'key'               => 'Your Consumer Key',
-        'secret'            => 'Your Consumer Secret',
-        'username'          => '',
-        'passkey'           => 'Your Online Passkey',
-        'validation_url'    => url('mpesa/validate'),
-        'confirmation_url'  => url('mpesa/confirm'),
-        'callback_url'      => url('mpesa/reconcile'),
-        'timeout_url'       => url('mpesa/timeout'),
-    )
+  array(
+    'env'               => 'sandbox',
+    'type'              => 4,
+    'shortcode'         => '174379',
+    'headoffice'        => '174379',
+    'key'               => 'Your Consumer Key',
+    'secret'            => 'Your Consumer Secret',
+    'username'          => '',
+    'passkey'           => 'Your Online Passkey',
+    'validation_url'    => url('mpesa/validate'),
+    'confirmation_url'  => url('mpesa/confirm'),
+    'callback_url'      => url('mpesa/reconcile'),
+    'results_url'       => url('mpesa/results'),
+    'timeout_url'       => url('mpesa/timeout'),
+  )
 );
 ````
 
@@ -46,6 +47,7 @@ Route::prefix('mpesa')->group(function ()
   Route::any('pay', 'MpesaController@pay');
   Route::any('validate', 'MpesaController@validation');
   Route::any('confirm', 'MpesaController@confirmation');
+  Route::any('results', 'MpesaController@results');
   Route::any('timeout', 'MpesaController@timeout');
 });
 ```

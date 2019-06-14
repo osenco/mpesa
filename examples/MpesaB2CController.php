@@ -7,7 +7,7 @@ use App\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-use Osen\Mpesa\STK;
+use Osen\Mpesa\B2C;
 
 class MpesaController extends Controller
 {
@@ -19,7 +19,7 @@ class MpesaController extends Controller
     public function __construct()
     {
 
-        STK::init(
+        B2C::init(
             array(
                 'env'               => 'sandbox',
                 'type'              => 4,
@@ -27,6 +27,7 @@ class MpesaController extends Controller
                 'headoffice'          => '173527',
                 'key'               => 'Your Consumer Key',
                 'secret'            => 'Your Consumer Secret',
+                'username'          => '',
                 'passkey'           => 'Your Online Passkey',
                 'validation_url'    => url('mpesa/validate'),
                 'confirmation_url'  => url('mpesa/confirm'),
@@ -46,8 +47,10 @@ class MpesaController extends Controller
     {
         $data = $request->all();
 
+        exit(var_dump(B2C));
+
         try {
-            $res = STK($request->phone, $request->amount, $request->reference);
+            $res = B2C($request->phone, $request->amount, $request->reference);
 
             if(!isset($res['errorCode'])){
                 $data['ref']            = $res->MerchantRequestID;
@@ -62,7 +65,7 @@ class MpesaController extends Controller
                 return Redirect::back();
             }
         } catch (\Exception $e) {
-            return array('msg' => $e->getMessage() );
+            return array('msg' => $e->getMessage );
             return Redirect::back();
         }
     }
@@ -70,33 +73,32 @@ class MpesaController extends Controller
     public function reconcile(Request $request, $method = 'mpesa')
     {
         if ($method == 'mpesa') {
-            $response = STK::reconcile(function ($data)
+            $response = B2C::reconcile($request->getContent(), function ($data)
             {
-                $payment = Payment::where('mpesa', $data['MerchantRequestID'])->first();
-                $payment->status = 'Paid';
-
-                return $payment->save();
+                $response = json_decode( true );
+                return isset( $response['Body']['stkCallback'] ) ? $response['Body']['stkCallback'] : null;
             });
+            
+            $payment = Payment::where('mpesa', $response['MerchantRequestID'])->first();
+            $payment->status = 'Paid';
+            if ($payment->save()) {
+                return array('status' => 0);
+            }
         }
     }
 
     public function validation()
     {
-        return STK::validate();
+        return B2C::validate();
     }
 
     public function confirmation()
     {
-        return STK::confirm();
+        return B2C::confirm();
     }
 
     public function results()
     {
-        return STK::results();
-    }
-
-    public function timeout()
-    {
-        return STK::timeout();
+        return B2C::results();
     }
 }

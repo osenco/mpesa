@@ -77,3 +77,17 @@ if (!function_exists('mpesa_confirm')) {
 		return \Osen\Mpesa\Service::confirm();
 	}
 }
+
+if (!function_exists('mpesa_results')) {
+	function mpesa_results()
+	{
+		return \Osen\Mpesa\Service::results();
+	}
+}
+
+if (!function_exists('mpesa_timeout')) {
+	function mpesa_timeout()
+	{
+		return \Osen\Mpesa\Service::timeout();
+	}
+}

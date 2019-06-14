@@ -4,6 +4,9 @@ namespace Osen\Mpesa;
 
 class Service
 {
+	/**
+	 * @var array/object Configuration options
+	 */
     public static $config;
 
     public static function init(array $configs = [])
@@ -21,14 +24,19 @@ class Service
 			'confirmation_url'  => '/mpesa/confirm',
 			'callback_url'      => '/mpesa/reconcile',
 			'timeout_url'       => '/mpesa/timeout',
+			'results_url'       => '/mpesa/results',
 		);
 
 		foreach ($configs as $key => $value) {
 			$parsed = array_combine($defaults, $configs);
 		}
+
         self::$config 	= (object)$parsed;
     }
 
+	/**
+	 * @return string Access token
+	 */
     public static function token()
     {
         $endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials' : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
@@ -40,16 +48,22 @@ class Service
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $curl_response = curl_exec($curl);
+
+		$result = json_decode($curl_response);
         
-		return json_decode($curl_response)->access_token;
+		return isset($result->access_token) ? $result->access_token : '';
     }
 
-    public static function status(string $transaction = null)
+	/**
+	 * @param int $transaction
+	 * @param string $command
+	 * @param string $remarks
+	 * @param string $occassion\
+	 * 
+	 * @return array Response
+	 */
+    public static function status(int $transaction, string $command = 'TransactionStatusQuery', string $remarks = 'Transaction Status Query', string $occassion = '')
     {
-        $transaction = $args['id'];
-    	$CommandID = isset($args['command']) ? $args['command'] : 'TransactionStatusQuery';
-    	$Remarks = isset($args['remarks']) ? $args['remarks'] : 'Transaction Status Query';
-    	$Occasion = isset($args['occassion']) ? $args['occassion'] : '';
       	$mpesa = new self;
 		$token = self::token();
       	$endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' : 'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
@@ -66,14 +80,14 @@ class Service
         $curl_post_data = array(
 	        'Initiator'           => self::$config->username,
 	        'SecurityCredential'  => self::$config->credentials,
-	        'CommandID'           => $CommandID,
+	        'CommandID'           => $command,
 	        'TransactionID'       => $transaction,
 	        'PartyA'              => self::$config->shortcode,
 	        'IdentifierType'      => self::$config->type,
-	        'ResultURL'           => self::$config->result_url,
+	        'ResultURL'           => self::$config->results_url,
 	        'QueueTimeOutURL'     => self::$config->timeout_url,
-	        'Remarks'             => $Remarks,
-	        'Occasion'            => $Occasion
+	        'Remarks'             => $remarks,
+	        'Occasion'            => $occasion
 	  	);
         $data_string = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -85,7 +99,17 @@ class Service
 		return json_decode($response);
     }
 
-    public static function reverse($transaction)
+	/**
+	 * @param int $transaction
+	 * @param int $amount
+	 * @param string $receiver
+	 * @param int $receiver_type
+	 * @param string $remarks
+	 * @param string $occassion\
+	 * 
+	 * @return array Response
+	 */
+    public static function reverse(int $transaction, int $amount, string $receiver, int $receiver_type = 3, string $remarks = 'Transaction Reversal', string $occassion = '')
     {
         $token = self::token();
     	$endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/reversal/v1/request' : 'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
@@ -104,13 +128,13 @@ class Service
 	        'Initiator'               => self::$config->business,
 	        'SecurityCredential'      => self::$config->credentials,
 	        'TransactionID'           => $transaction,
-	        'Amount'                  => $Amount,
-	        'ReceiverParty'           => $ReceiverParty,
-	        'RecieverIdentifierType'  => $RecieverIdentifierType,
-	        'ResultURL'               => self::$config->result_url,
+	        'Amount'                  => $amount,
+	        'ReceiverParty'           => $receiver,
+	        'RecieverIdentifierType'  => $reciever_type,
+	        'ResultURL'               => self::$config->results_url,
 	        'QueueTimeOutURL'         => self::$config->timeout_url,
-	        'Remarks'                 => $Remarks,
-	        'Occasion'                => $Occasion
+	        'Remarks'                 => $remarks,
+	        'Occasion'                => $occasion
 	  	);
         $data_string = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -122,7 +146,14 @@ class Service
 		return json_decode($response);
     }
 
-    public static function balance(int $transaction = null)
+	/**
+	 * @param string $command
+	 * @param string $remarks
+	 * @param string $occassion
+	 * 
+	 * @return array Response
+	 */
+    public static function balance(string $command, string $remarks = 'Balance Query', string $occassion = '')
     {
         $token = self::token();
       	
@@ -139,15 +170,15 @@ class Service
       	);
 		
         $curl_post_data = array(
-	        'CommandID'           => $CommandID,
+	        'CommandID'           => $command,
 	        'Initiator'           => self::$config->username,
 	        'SecurityCredential'  => self::$config->credentials,
 	        'PartyA'              => self::$config->shortcode,
 	        'IdentifierType'      => self::$config->type,
-	        'Remarks'             => $Remarks,
+	        'Remarks'             => $remarks,
 	        'QueueTimeOutURL'     => self::$config->timeout_url,
-	        'ResultURL'           => self::$config->result_url
-	  );
+	        'ResultURL'           => self::$config->results_url
+	  	);
         $data_string = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
@@ -157,10 +188,13 @@ class Service
 		
 		return json_decode($response);
     }
-
-    public static function validate($data = null, $callback = null)
+	
+	/**
+	 * @param callable $callback
+	 */
+    public static function validate($callback = null)
 	{
-		$data = is_null($data) ? json_decode(file_get_contents('php://input'), true) : array();
+		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
 		    return array(
@@ -184,10 +218,13 @@ class Service
 	        }
 	    }
     }
-
-    public static function confirm($data = null, $callback = null)
+	
+	/**
+	 * @param callable $callback
+	 */
+    public static function confirm($callback = null)
 	{
-		$data = is_null($data) ? json_decode(file_get_contents('php://input'), true) : array();
+		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
 		    return array(
@@ -211,41 +248,50 @@ class Service
 	      	}
 	    }
 	}
-    	
+	
 	/**
-	* Function to process response data for reconciliation
-	* @param String $callback - Optional callable function to process the response - must return boolean
-	* @return bool/array
-	*/            
-	public static function reconcile($data = null, $callback = null)
+	 * @param callable $callback
+	 */    
+	public static function reconcile($callback = null)
 	{
-		if(is_null($data)){
-			$response = json_decode(file_get_contents('php://input'), true);
-			$response = isset($response['Body']) ? $response['Body'] : array();
-		} else {
-			$response = $data;
-		}
+		$response = json_decode(file_get_contents('php://input'), true);
+		$response = isset($response['Body']) ? $response['Body'] : array();
 	    
-        return is_null($callback) ? array('resultCode' => 0, 'resultDesc' => 'Reconciliation successful') : call_user_func_array($callback, array($response));
+        if(is_null($callback)){
+			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+		 } else {
+			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+		 }
+	}
+	
+	/**
+	 * @param callable $callback
+	 */
+	public static function results($callback = null)
+	{
+		$response = json_decode(file_get_contents('php://input'), true);
+		$response = isset($response['Body']) ? $response['Body'] : array();
+	    
+        if(is_null($callback)){
+			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+		 } else {
+			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+		 }
+	}
+	
+	/**
+	 * @param callable $callback
+	 */
+	public static function timeout($callback = null)
+	{
+		$response = json_decode(file_get_contents('php://input'), true);
+		$response = isset($response['Body']) ? $response['Body'] : array();
+	    
+        if(is_null($callback)){
+			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+		 } else {
+			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+		 }
 	}
 
-	/**
-	* Function to process response data if system times out
-	* @param String $callback - Optional callable function to process the response - must return boolean
-	* @return bool/array
-	*/ 
-	public static function timeout($data = null, $callback = null)
-	{
-		if(is_null($data)){
-			$response = json_decode(file_get_contents('php://input'), true);
-			$response = isset($response['Body']) ? $response['Body'] : array();
-		} else {
-			$response = $data;
-		}
-		if(is_null($callback)){
-			return true;
-		} else {
-			return call_user_func_array($callback, array($response));
-		}
-	}
 }

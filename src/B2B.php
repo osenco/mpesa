@@ -7,11 +7,18 @@ namespace Osen\Mpesa;
 class B2B extends Service
 {
 
-    public static function send(string $phone = null, int $amount = 10, string $reference = 'TRX')
+    public static function send(string $receiver, string $receiver_type, int $amount = 10, $command = '',  string $reference = 'TRX', string $remarks = '')
     {
         $token = parent::token();
 
         $endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest' : 'https://sandbox.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
+		$env        = parent::$config->env;
+        $plaintext  = parent::$config->password;
+        $publicKey  = file_get_contents('certs/'.$env.'/cert.cr');
+
+        openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+        $password    = base64_encode($encrypted);
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
@@ -21,21 +28,21 @@ class B2B extends Service
         		'Content-Type:application/json',
         		'Authorization:Bearer '.$token 
         	) 
-       );
+       	);
         $curl_post_data = array(
 	        'Initiator'               => parent::$config->username,
-	        'SecurityCredential'      => parent::$config->credentials,
-	        'CommandID'               => $commandID,
+	        'SecurityCredential'      => $password,
+	        'CommandID'               => $command,
 	        'SenderIdentifierType'    => parent::$config->type,
-	        'RecieverIdentifierType'  => $RecieverIdentifierType,
-	        'Amount'                  => $Amount,
+	        'RecieverIdentifierType'  => $receiver_type,
+	        'Amount'                  => $amount,
 	        'PartyA'                  => parent::$config->shortcode,
-	        'PartyB'                  => $PartyB,
-	        'AccountReference'        => $AccountReference,
-	        'Remarks'                 => $Remarks,
+	        'PartyB'                  => $receiver,
+	        'AccountReference'        => $reference,
+	        'Remarks'                 => $remarks,
 	        'QueueTimeOutURL'         => parent::$config->timeout_url,
 	        'ResultURL'               => parent::$config->result_url
-	   );
+	   	);
         $data_string = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
