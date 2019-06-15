@@ -9,12 +9,22 @@ class C2B extends Service
 
     public static function register()
     {
-        $token = parent::token();
+        $token      = parent::token();
 
-		$endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl' : 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl';
-		$curl = curl_init();
+		$endpoint   = (parent::$config->env == 'live') ? 
+            'https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl' : 
+            'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl';
+
+		$curl       = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json','Authorization:Bearer '.$token));
+        curl_setopt(
+            $curl, 
+            CURLOPT_HTTPHEADER, 
+            array(
+                'Content-Type:application/json',
+                'Authorization:Bearer '.$token
+            )
+        );
 			
 		$curl_post_data = array(
             'ShortCode' 		=> parent::$config->shortcode,
@@ -28,15 +38,24 @@ class C2B extends Service
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		$response = curl_exec($curl);
+
 		$content = json_decode($response)->ResponseDescription;
-		if ($response || isset($content->ResponseDescription)) {
-			$status = $content->ResponseDescription;
-		} else {
-			$status = 'Sorry could not connect to Daraja. Check your configuration and try again.';
-		}
-		return array('Registration status' => $status);
+        $status = ($response || isset($content->ResponseDescription)) 
+            ? $content->ResponseDescription 
+            : 'Sorry could not connect to Daraja. Check your configuration and try again.';
+		
+        return array('Registration status' => $status);
     }
 
+	/**
+	 * Transfer funds between two paybills
+	 * @param string $phone Receiving party phone
+	 * @param int $amount Amount to transfer
+	 * @param string $command Command ID
+	 * @param string $reference 
+	 * 
+	 * @return array
+	 */
     public static function send(string $phone = null, int $amount = 10, string $reference = 'TRX', string $command = '')
     {
         $token = parent::token();
@@ -44,11 +63,20 @@ class C2B extends Service
         $phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
 		$phone = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
         
-        $endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/c2b/v1/simulate' : 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate';
+        $endpoint = (parent::$config->env == 'live') 
+            ? 'https://api.safaricom.co.ke/mpesa/c2b/v1/simulate' 
+            : 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate';
         
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json','Authorization:Bearer '.$token));
+        curl_setopt(
+            $curl, 
+            CURLOPT_HTTPHEADER, 
+            array(
+                'Content-Type:application/json',
+                'Authorization:Bearer '.$token
+            )
+        );
         $curl_post_data = array(
             'ShortCode' => parent::$config->shortcode,
             'CommandID' => $command,

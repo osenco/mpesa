@@ -1,4 +1,7 @@
 <?php
+/**
+ * These helper functions wrap around the various mpesa API classes for more concise code
+ */
 
 if (!function_exists('mpesa_setup_mpesa')) {
 	function mpesa_setup_config(array $config = [], $api = 'STK')
@@ -65,28 +68,35 @@ if (!function_exists('mpesa_b2b_request')) {
 }
 
 if (!function_exists('mpesa_validate')) {
-	function mpesa_validate()
+	function mpesa_validate($callback = null)
 	{
-		return \Osen\Mpesa\Service::validate();
+		return \Osen\Mpesa\Service::validate($callback);
 	}
 }
 
 if (!function_exists('mpesa_confirm')) {
-	function mpesa_confirm()
+	function mpesa_confirm($callback = null)
 	{
-		return \Osen\Mpesa\Service::confirm();
+		return \Osen\Mpesa\Service::confirm($callback);
+	}
+}
+
+if (!function_exists('mpesa_reconcile')) {
+	function mpesa_reconcile($callback = null)
+	{
+		return \Osen\Mpesa\Service::reconcile($callback);
 	}
 }
 
 if (!function_exists('mpesa_results')) {
-	function mpesa_results()
+	function mpesa_results($callback = null)
 	{
-		return \Osen\Mpesa\Service::results();
+		return \Osen\Mpesa\Service::results($callback);
 	}
 }
 
 if (!function_exists('mpesa_timeout')) {
-	function mpesa_timeout()
+	function mpesa_timeout($callback = null)
 	{
 		return \Osen\Mpesa\Service::timeout();
 	}

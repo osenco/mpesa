@@ -28,7 +28,8 @@ class Service
 		);
 
 		foreach ($configs as $key => $value) {
-			$parsed = array_combine($defaults, $configs);
+			$keys = array_keys($defaults);
+			$parsed = array_combine($keys, $configs);
 		}
 
         self::$config 	= (object)$parsed;
@@ -39,7 +40,10 @@ class Service
 	 */
     public static function token()
     {
-        $endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials' : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+        $endpoint = (self::$config->env == 'live') ? 
+			'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials' : 
+			'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+
 		$credentials = base64_encode(self::$config->key.':'.self::$config->secret);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
@@ -66,7 +70,10 @@ class Service
     {
       	$mpesa = new self;
 		$token = self::token();
-      	$endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' : 'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
+      	$endpoint = (self::$config->env == 'live') ? 
+		  	'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' : 
+			'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
@@ -112,7 +119,10 @@ class Service
     public static function reverse(int $transaction, int $amount, string $receiver, int $receiver_type = 3, string $remarks = 'Transaction Reversal', string $occassion = '')
     {
         $token = self::token();
-    	$endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/reversal/v1/request' : 'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
+    	$endpoint = (self::$config->env == 'live') ? 
+			'https://api.safaricom.co.ke/mpesa/reversal/v1/request' : 
+			'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
@@ -157,7 +167,10 @@ class Service
     {
         $token = self::token();
       	
-        $endpoint = (self::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/accountbalance/v1/query' : 'https://sandbox.safaricom.co.ke/mpesa/accountbalance/v1/query';
+        $endpoint = (self::$config->env == 'live')
+			? 'https://api.safaricom.co.ke/mpesa/accountbalance/v1/query'
+			: 'https://sandbox.safaricom.co.ke/mpesa/accountbalance/v1/query';
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
@@ -190,7 +203,9 @@ class Service
     }
 	
 	/**
-	 * @param callable $callback
+	 * @param callable $callback Defined function or closure to process data and return true/false
+	 * 
+	 * @return array
 	 */
     public static function validate($callback = null)
 	{
@@ -220,7 +235,9 @@ class Service
     }
 	
 	/**
-	 * @param callable $callback
+	 * @param callable $callback Defined function or closure to process data and return true/false
+	 * 
+	 * @return array
 	 */
     public static function confirm($callback = null)
 	{
@@ -250,9 +267,11 @@ class Service
 	}
 	
 	/**
-	 * @param callable $callback
+	 * @param callable $callback Defined function or closure to process data and return true/false
+	 * 
+	 * @return array
 	 */    
-	public static function reconcile($callback = null)
+	public static function reconcile(callable $callback = null)
 	{
 		$response = json_decode(file_get_contents('php://input'), true);
 		$response = isset($response['Body']) ? $response['Body'] : array();
@@ -260,14 +279,18 @@ class Service
         if(is_null($callback)){
 			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
 		 } else {
-			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+			return call_user_func_array($callback, array($response))
+				? array('resultCode' => 0, 'resultDesc' => 'Service request successful') 
+				: array('resultCode' => 1, 'resultDesc' => 'Service request failed');
 		 }
 	}
 	
 	/**
-	 * @param callable $callback
+	 * @param callable $callback Defined function or closure to process data and return true/false
+	 * 
+	 * @return array
 	 */
-	public static function results($callback = null)
+	public static function results(callable $callback = null)
 	{
 		$response = json_decode(file_get_contents('php://input'), true);
 		$response = isset($response['Body']) ? $response['Body'] : array();
@@ -275,14 +298,18 @@ class Service
         if(is_null($callback)){
 			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
 		 } else {
-			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+			return call_user_func_array($callback, array($response))
+				? array('resultCode' => 0, 'resultDesc' => 'Service request successful')
+				: array('resultCode' => 1, 'resultDesc' => 'Service request failed');
 		 }
 	}
 	
 	/**
-	 * @param callable $callback
+	 * @param callable $callback Defined function or closure to process data and return true/false
+	 * 
+	 * @return array
 	 */
-	public static function timeout($callback = null)
+	public static function timeout(callable $callback = null)
 	{
 		$response = json_decode(file_get_contents('php://input'), true);
 		$response = isset($response['Body']) ? $response['Body'] : array();
@@ -290,7 +317,9 @@ class Service
         if(is_null($callback)){
 			return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
 		 } else {
-			return call_user_func_array($callback, array($response)) ? array('resultCode' => 0, 'resultDesc' => 'Service request successful') : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+			return call_user_func_array($callback, array($response))
+				? array('resultCode' => 0, 'resultDesc' => 'Service request successful')
+				: array('resultCode' => 1, 'resultDesc' => 'Service request failed');
 		 }
 	}
 

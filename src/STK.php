@@ -6,20 +6,38 @@ namespace Osen\Mpesa;
 
 class STK extends Service
 {
-
-    public static function send(string $phone = null, int $amount = 10, string $reference = 'TRX')
+    /**
+     * @param int $amount The amount to be transacted.
+     * @param string $phone The MSISDN sending the funds.
+     * @param string $reference Used with M-Pesa PayBills.
+     * @param string $description A description of the transaction.
+     * @param string $remark Remarks
+     * 
+     * @return array Response
+     */
+    public static function send(string $phone, int $amount, string $reference)
     {
         $token = parent::token();
         
 		$phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
 		$phone = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
         
-		$endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest' : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+		$endpoint = (parent::$config->env == 'live')
+            ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest' 
+            : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+
 		$timestamp = date('YmdHis');
         $password = base64_encode(parent::$config->shortcode.parent::$config->passkey.$timestamp);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type:application/json', 'Authorization:Bearer '.$token]);
+        curl_setopt(
+            $curl, 
+            CURLOPT_HTTPHEADER, 
+            array(
+                'Content-Type:application/json', 
+                'Authorization:Bearer '.$token
+            )
+        );
         $curl_post_data = array(
             'BusinessShortCode' => parent::$config->headoffice,
             'Password' 			=> $password,

@@ -6,18 +6,32 @@ namespace Osen\Mpesa;
 
 class B2B extends Service
 {
-
+	/**
+	 * Transfer funds between two paybills
+	 * @param string $receiver Receiving party paybill
+	 * @param string $receiver_type Receiver party type
+	 * @param int $amount Amount to transfer
+	 * @param string $command Command ID
+	 * @param string $reference 
+	 * @param string $remarks
+	 * 
+	 * @return array
+	 */
     public static function send(string $receiver, string $receiver_type, int $amount = 10, $command = '',  string $reference = 'TRX', string $remarks = '')
     {
-        $token = parent::token();
+        $token 		= parent::token();
 
-        $endpoint = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest' : 'https://sandbox.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
 		$env        = parent::$config->env;
+
+        $endpoint 	= ($env == 'live')
+			? 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest'
+			: 'https://sandbox.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
+
         $plaintext  = parent::$config->password;
         $publicKey  = file_get_contents('certs/'.$env.'/cert.cr');
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
-        $password    = base64_encode($encrypted);
+        $password 	= base64_encode($encrypted);
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);

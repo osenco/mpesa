@@ -99,7 +99,7 @@ STK::confirm();
 STK::validate();
 ```
 
-These functions take an optional argument for a callback function that processes the response. If none is provided, the function will return a succesful response. The callback function can either be a defined funtion closure(anonymous)
+These functions take an optional argument for a callback function that processes the response. If none is provided, the function will return a succesful response. The callback function can either be a defined funtion or a closure(anonymous)
 
 ```php
 function validate_data($data){
@@ -117,7 +117,7 @@ STK::confirm(function($data){
 ```
 
 ## Reconciling The Payment
-The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data The callback function can either be a defined funtion closure(anonymous). If ommited, the method will return a successful response by default.
+The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data. The callback function can either be a defined funtion or a closure(anonymous). If ommited, the method will return a successful response by default.
 
 ```php
 STK::reconcile();
@@ -249,4 +249,4 @@ Mpesa is a service and registered trademark of [Safaricom PLC](https://safaricom
 This software is released under [MIT License](LICENSE).
 
 ## Usage & Contribution
-This library is free and open source software. You can copy, modify and distribute it as you so wish. If you have any ideas on how to improve it, shoout us an email at [hi@osen.co.ke](mailto:hi@osen.co.ke) or raise an issue.
+This library is free and open source software. You can copy, modify and distribute it as you so wish. If you have any ideas on how to improve it, shoot us an email at [hi@osen.co.ke](mailto:hi@osen.co.ke) or raise an issue.

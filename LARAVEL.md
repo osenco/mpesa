@@ -26,7 +26,6 @@ STK::init(
     'headoffice'        => '174379',
     'key'               => 'Your Consumer Key',
     'secret'            => 'Your Consumer Secret',
-    'username'          => '',
     'passkey'           => 'Your Online Passkey',
     'validation_url'    => url('mpesa/validate'),
     'confirmation_url'  => url('mpesa/confirm'),

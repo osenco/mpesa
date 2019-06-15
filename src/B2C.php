@@ -6,26 +6,45 @@ namespace Osen\Mpesa;
 
 class B2C extends Service
 {
-
+	/**
+	 * Transfer funds between two paybills
+	 * @param string $receiver Receiving party phone
+	 * @param int $amount Amount to transfer
+	 * @param string $command Command ID
+	 * @param string $occassion
+	 * @param string $remarks
+	 * 
+	 * @return array
+	 */
     public static function send(string $receiver, int $amount = 10, string $command = 'TRX', string $remarks = '', string $occassion = '')
     {
-        $token = parent::token();
+        $token  = parent::token();
 
-        $phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
-		$phone = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
+        $phone  = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
+		$phone  = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
 
-        $curl = curl_init();
+        $endpoint   = (parent::$config->env == 'live')
+            ? 'https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest'
+            : 'https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest';
+
+        $curl   = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type:application/json', 'Authorization:Bearer '.$token]);
+        curl_setopt(
+            $curl, 
+            CURLOPT_HTTPHEADER, 
+            array(
+                'Content-Type:application/json', 
+                'Authorization:Bearer '.$token
+            )
+        );
 
-        $endpoint   = (parent::$config->env == 'live') ? 'https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest' : 'https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest';
         $timestamp  = date('YmdHis');
         $env        = parent::$config->env;
         $plaintext  = parent::$config->password;
         $publicKey  = file_get_contents('certs/'.$env.'/cert.cr');
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
-        $password    = base64_encode($encrypted);
+        $password   = base64_encode($encrypted);
 
         $curl_post_data = array(
             'InitiatorName'       => parent::$config->username,
