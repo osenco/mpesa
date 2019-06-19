@@ -1,7 +1,6 @@
 # The C2B (Customer To Business) API
 
 ### Instantiating The Class
-
 Remember to add the Mpesa web portal username when setting up the class. 
 
 ````php

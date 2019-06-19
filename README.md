@@ -22,10 +22,10 @@ Intuitive, Dynamic Mpesa PHP SDK
             <td>B2C - Business To Customer</td>
             <td>Salary Payments, Disbursements, Reversals</td>
         </tr>
-        <tr>
+        <!-- <tr>
             <td>B2B - Business To Business</td>
             <td>Payment For Supplies</td>
-        </tr>
+        </tr> -->
         <tr>
             <td>Account Balance Check</td>
             <td>Accounting Purposes</td>
@@ -48,7 +48,13 @@ Install via composer by typing in your terminal
 composer require osenco/mpesa
 ```
 
-For Laravel Usesrs, there is a detailed guide [here](LARAVEL.md) as well as a sample [controller](examples/MpesaController.php)
+If you dont use composer you can just download this library from the releases, unzip it in your project and include the [autoload.php](autoload.php) file in your project.
+
+```php
+require_once('path/to/autoload.php');
+```
+
+For Laravel Users, there is a detailed guide [here](LARAVEL.md) as well as a sample [controller](examples/MpesaController.php)
 
 ## Usage
 ### Import Class With Namespace
@@ -65,20 +71,22 @@ The class uses static methods and does not need to be instantiated. This is to p
 STK::init(
     array(
         'env'               => 'sandbox',
-        'type'              => 4,
+        'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
         'shortcode'         => '174379',
         'headoffice'        => '174379',
         'key'               => 'Your Consumer Key',
         'secret'            => 'Your Consumer Secret',
+        'username'          => '',
         'passkey'           => 'Your Online Passkey',
         'validation_url'    => url('mpesa/validate'),
         'confirmation_url'  => url('mpesa/confirm'),
         'callback_url'      => url('mpesa/reconcile'),
-        'timeout_url'       => url('mpesa/timeout'),
         'results_url'       => url('mpesa/results'),
     )
 );
 ```
+
+    * Tip: You can just pass your key and secret and the various URL endpoints for testing on sandbox, the system will use the defaults provided from [Daraja](https://developer.safaricom.co.ke/test_credentials).
 
 ### Making A Payment Request
 Wrap your request in a try catch to ensure proper error handling
@@ -161,6 +169,70 @@ STK::results(function($data){
 });
 ```
 
+## Available Command IDs
+<table>
+    <thead>
+    <tr>
+        <th>Command ID</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>TransactionReversal</td>
+            <td>Reversal for an erroneous C2B transaction.</td>
+        </tr>
+        <tr>
+            <td>SalaryPayment</td>
+            <td>Used to send money from an employer to employees e.g. salaries</td>
+        </tr>
+        <tr>
+            <td>BusinessPayment</td>
+            <td>Used to send money from business to customer e.g. refunds</td>
+        </tr>
+        <tr>
+            <td>PromotionPayment</td>
+            <td>Used to send money when promotions take place e.g. raffle winners</td>
+        </tr>
+        <tr>
+            <td>AccountBalance</td>
+            <td>Used to check the balance in a paybill/buy goods account (includes utility, MMF, Merchant, Charges paid account).</td>
+        </tr>
+        <tr>
+            <td>CustomerPayBillOnline</td>
+            <td>Used to simulate a transaction taking place in the case of C2B Simulate Transaction or to initiate a transaction on behalf of the customer (STK Push).</td>
+        </tr>
+        <tr>
+            <td>TransactionStatusQuery</td>
+            <td>Used to query the details of a transaction.</td>
+        </tr>
+        <tr>
+            <td>CheckIdentity</td>
+            <td>Similar to STK push, uses M-Pesa PIN as a service.</td>
+        </tr>
+        <tr>
+            <td>BusinessPayBill</td>
+            <td>Sending funds from one paybill to another paybill</td>
+        </tr>
+        <tr>
+            <td>BusinessBuyGoods</td>
+            <td>sending funds from buy goods to another buy goods.</td>
+        </tr>
+        <tr>
+            <td>DisburseFundsToBusiness</td>
+            <td>Transfer of funds from utility to MMF account.</td>
+        </tr>
+        <tr>
+            <td>BusinessToBusinessTransfer</td>
+            <td>Transferring funds from one paybills MMF to another paybills MMF account.</td>
+        </tr>
+        <tr>
+            <td>BusinessTransferFromMMFToUtility</td>
+            <td>Transferring funds from paybills MMF to another paybills utility account.</td>
+        </tr>
+    </tbody>
+</table>
+
 ## Helper Functions
 You can use the helper functions for more concise code
 
@@ -172,7 +244,7 @@ To configure the class, use the `mpesa_setup_config` function, passing your conf
 */
 $config = array(
     'env'               => 'sandbox',
-    'type'              => 4, // For Paybill, or, 2 for Till
+    'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
     'shortcode'         => '174379',
     'headoffice'          => '174379',
     'key'               => 'Your Consumer Key',
@@ -199,45 +271,30 @@ mpesa_setup_b2b($config);
 To make a STK Prompt request, pass the user's phone number, the amount due, and an optional reference(shows up on the user's phone) respectively
 
 ```php
-/**
- * @param $phone Phone Number (starting with country code e.g 254)
-*/
 mpesa_stk_push($phone, $amount, $reference);
 ```
 
 To process c2b transactions, call the function as follows, passing the user's phone number, the amount due, and an optional reference respectively
 
 ```php
-/**
- * @param $phone Phone Number (starting with country code e.g 254)
-*/
 mpesa_c2b_request($phone, $amount, $reference);
 ```
 
 To send funds to a customer
 
 ```php
-/**
- * @param $phone Phone Number
-*/
 mpesa_b2c_request();
 ```
 
 Transfer funds between one business to another
 
 ```php
-/**
- * Transfer funds between one business to another
-*/
 mpesa_b2b_request();
 ```
 
-Validate Or Confirm Transaction Details
+Validate Or Confirm Transaction Details. Call this function at your validation/confirmation endpoint.
 
 ```php
-/**
- * Call this function at your validation/confirmation endpoint
-*/
 mpesa_validate();
 mpesa_confirm()
 ```
@@ -249,4 +306,4 @@ Mpesa is a service and registered trademark of [Safaricom PLC](https://safaricom
 This software is released under [MIT License](LICENSE).
 
 ## Usage & Contribution
-This library is free and open source software. You can copy, modify and distribute it as you so wish. If you have any ideas on how to improve it, shoot us an email at [hi@osen.co.ke](mailto:hi@osen.co.ke) or raise an issue.
+This library is free and open source software. You can copy, modify and distribute it as you so wish. If you have any ideas on how to improve it, shoot us an email at [hi@osen.co.ke](mailto:hi@osen.co.ke) or raise an issue here.

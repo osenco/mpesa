@@ -17,7 +17,7 @@ use Osen\Mpesa\STK;
 
 In your controller's constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 
 
-````php
+```php
 STK::init(
   array(
     'env'               => 'sandbox',
@@ -34,20 +34,28 @@ STK::init(
     'timeout_url'       => url('mpesa/timeout'),
   )
 );
-````
+```
 
 ## Routing and Endpoints
 
 You can set your laravel routes so as to create endpoints for interaction between Mpesa and your Laravel Installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
 
 ```php
-Route::prefix('mpesa')->group(function ()
-{
-  Route::any('pay', 'MpesaController@pay');
-  Route::any('validate', 'MpesaController@validation');
-  Route::any('confirm', 'MpesaController@confirmation');
-  Route::any('results', 'MpesaController@results');
-  Route::any('timeout', 'MpesaController@timeout');
-});
+Route::prefix('mpesa')->group(
+  function ()
+  {
+    Route::any('pay', 'MpesaController@pay');
+    Route::any('validate', 'MpesaController@validation');
+    Route::any('confirm', 'MpesaController@confirmation');
+    Route::any('results', 'MpesaController@results');
+    Route::any('timeout', 'MpesaController@timeout');
+    Route::any('reconcile', 'MpesaController@reconcile');
+  }
+);
 ```
+
+### CSRF verification
+Remember to add `mpesa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from Mpesa.
+
+
 See [the README](README.md) for making and processing payment requests.

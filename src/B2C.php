@@ -66,7 +66,7 @@ class B2C extends Service
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
 		
-		return json_decode($response);
+		return json_decode($response, true);
     }
     
 }

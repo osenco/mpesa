@@ -15,8 +15,9 @@ class STK extends Service
      * 
      * @return array Response
      */
-    public static function send(string $phone, int $amount, string $reference)
+    public static function send(string $phone, int $amount, string $reference, string $description = 'Transaction Description', string $remark = 'Remark')
     {
+  
         $token = parent::token();
         
 		$phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
@@ -49,9 +50,9 @@ class STK extends Service
             'PhoneNumber' 		=> $phone,
             'CallBackURL' 		=> parent::$config->callback_url,
             'AccountReference' 	=> $reference,
-            'TransactionDesc' 	=> 'Transaction Description',
-            'Remark'			=> 'Remark'
-       );
+            'TransactionDesc' 	=> $description,
+            'Remark'			=> $remark
+        );
         $data_string = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
@@ -59,7 +60,7 @@ class STK extends Service
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
 		
-		return json_decode($response);
+		return json_decode($response, true);
     }
 
 }
