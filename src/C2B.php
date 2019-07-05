@@ -1,8 +1,8 @@
 <?php
 
-use Osen\Mpesa\Service;
-
 namespace Osen\Mpesa;
+
+use Osen\Mpesa\Service;
 
 class C2B extends Service
 {
@@ -41,10 +41,10 @@ class C2B extends Service
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
 		curl_setopt($curl, CURLOPT_HEADER, false);
-		$response = curl_exec($curl);
+		$response   = curl_exec($curl);
 
-		$content = json_decode($response)->ResponseDescription;
-        $status = ($response || isset($content->ResponseDescription)) 
+		$content    = json_decode($response);
+        $status     = ($response || isset($content->ResponseDescription)) 
             ? $content->ResponseDescription 
             : 'Sorry could not connect to Daraja. Check your configuration and try again.';
 		
@@ -52,7 +52,7 @@ class C2B extends Service
     }
 
 	/**
-	 * Transfer funds between two paybills
+	 * Simulates a C2B request
 	 * @param string $phone Receiving party phone
 	 * @param int $amount Amount to transfer
 	 * @param string $command Command ID
@@ -81,14 +81,14 @@ class C2B extends Service
                 'Authorization:Bearer '.$token
             )
         );
-        $curl_post_data = array(
-            'ShortCode' => parent::$config->shortcode,
-            'CommandID' => $command,
-            'Amount' => round($amount),
-            'Msisdn' => $phone,
+        $curl_post_data     = array(
+            'ShortCode'     => parent::$config->shortcode,
+            'CommandID'     => $command,
+            'Amount'        => round($amount),
+            'Msisdn'        => $phone,
             'BillRefNumber' => $reference
         );
-        $data_string = json_encode($curl_post_data);
+        $data_string        = json_encode($curl_post_data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);

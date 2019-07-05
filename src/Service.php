@@ -386,25 +386,11 @@ class Service
 		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
-		    return array(
-		        'ResponseCode'            => 0, 
-		        'ResponseDesc'            => 'Success',
-		        'ThirdPartyTransID'       => isset($data['transID']) ? $data['transID'] : 0
-	      	);
+		    return array('ResponseCode' => 0, 'ResponseDesc' => 'Success');
 	    } else {
-	        if (!call_user_func_array($callback, array($data))) {
-	          	return array(
-	            	'ResponseCode'        => 1, 
-	            	'ResponseDesc'        => 'Failed',
-	            	'ThirdPartyTransID'   => isset($data['transID']) ? $data['transID'] : 0
-	           	);
-	        } else {
-	          	return array(
-	            	'ResponseCode'        => 0, 
-	            	'ResponseDesc'        => 'Success',
-	            	'ThirdPartyTransID'   => isset($data['transID']) ? $data['transID'] : 0
-	         	);
-	        }
+	        return call_user_func_array($callback, array($data)) 
+				? array('ResponseCode' => 0, 'ResponseDesc' => 'Success') 
+				: array('ResponseCode' => 1, 'ResponseDesc' => 'Failed');
 	    }
     }
 	
@@ -434,25 +420,11 @@ class Service
 		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
-		    return array(
-		        'ResponseCode'          => 0, 
-		        'ResponseDesc'          => 'Success',
-		        'ThirdPartyTransID'     =>  isset($data['transID']) ? $data['transID'] : 0
-		  	);
+		    return array('ResponseCode' => 0, 'ResponseDesc' => 'Success');
 	    } else {
-	      	if (!call_user_func_array($callback, array($data))) {
-	        	return array(
-	          		'ResponseCode'        => 1, 
-	          		'ResponseDesc'        => 'Failed',
-	          		'ThirdPartyTransID'   => isset($data['transID']) ? $data['transID'] : 0
-	         	);
-	      	} else {
-	        	return array(
-	          		'ResponseCode'        => 0, 
-	          		'ResponseDesc'        => 'Success',
-	          		'ThirdPartyTransID'   => isset($data['transID']) ? $data['transID'] : 0
-	         	);
-	      	}
+	        return call_user_func_array($callback, array($data)) 
+				? array('ResponseCode' => 0, 'ResponseDesc' => 'Success') 
+				: array('ResponseCode' => 1, 'ResponseDesc' => 'Failed');
 	    }
 	}
 	

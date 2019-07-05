@@ -86,7 +86,7 @@ STK::init(
 );
 ```
 
-    * Tip: You can just pass your key and secret and the various URL endpoints for testing on sandbox, the system will use the defaults provided from [Daraja](https://developer.safaricom.co.ke/test_credentials).
+<b>Tip: You can just pass your key and secret and the various URL endpoints for testing on sandbox, the system will use the defaults provided from [Daraja](https://developer.safaricom.co.ke/test_credentials).</b>
 
 ### Making A Payment Request
 Wrap your request in a try catch to ensure proper error handling
@@ -94,6 +94,8 @@ Wrap your request in a try catch to ensure proper error handling
 ```php
 try {
     return $res = STK::send($phone, $amount, $reference);
+
+    // Do something with $res, like save to DB with the $res['MerchantRequestID'] as key.
 } catch (\Throwable $th) {
     return $th;
 }
@@ -111,7 +113,7 @@ These functions take an optional argument for a callback function that processes
 
 ```php
 function validate_data($data){
-    // Process data
+    // Process $data
     return true;
 }
 STK::validate('validate_data');

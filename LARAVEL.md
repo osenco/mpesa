@@ -38,7 +38,7 @@ STK::init(
 
 ## Routing and Endpoints
 
-You can set your laravel routes so as to create endpoints for interaction between Mpesa and your Laravel Installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
+You can set your Laravel routes so as to create endpoints for interaction between Mpesa and your Laravel installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
 
 ```php
 Route::prefix('mpesa')->group(

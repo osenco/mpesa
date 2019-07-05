@@ -47,8 +47,6 @@ class MpesaController extends Controller
     {
         $data = $request->all();
 
-        exit(var_dump(B2C));
-
         try {
             $res = B2C($request->phone, $request->amount, $request->reference);
 

@@ -1,8 +1,8 @@
 <?php
 
-use Osen\Mpesa\Service;
-
 namespace Osen\Mpesa;
+
+use Osen\Mpesa\Service;
 
 class STK extends Service
 {
@@ -18,17 +18,17 @@ class STK extends Service
     public static function send(string $phone, int $amount, string $reference, string $description = 'Transaction Description', string $remark = 'Remark')
     {
   
-        $token = parent::token();
+        $token      = parent::token();
         
-		$phone = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
-		$phone = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
+		$phone      = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;
+		$phone      = (substr($phone, 0,1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
+		$timestamp  = date('YmdHis');
+        $password   = base64_encode(parent::$config->shortcode.parent::$config->passkey.$timestamp);
         
-		$endpoint = (parent::$config->env == 'live')
+		$endpoint   = (parent::$config->env == 'live')
             ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest' 
             : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-		$timestamp = date('YmdHis');
-        $password = base64_encode(parent::$config->shortcode.parent::$config->passkey.$timestamp);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(

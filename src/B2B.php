@@ -1,8 +1,8 @@
 <?php
 
-use Osen\Mpesa\Service;
-
 namespace Osen\Mpesa;
+
+use Osen\Mpesa\Service;
 
 class B2B extends Service
 {
