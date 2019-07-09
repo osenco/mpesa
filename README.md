@@ -58,14 +58,14 @@ For Laravel Users, there is a detailed guide [here](LARAVEL.md) as well as a sam
 
 ## Usage
 ### Import Class With Namespace
-Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice. We will be using STK here.
+Import the class namespace into your class or app to make it available for use. Replace STK with your API of choice. We will be using STK here. See how to set up [C2B here](C2B.md), [B2C here](B2C.md) and [B2B here](B2B.md).
 
 ```php
 use Osen\Mpesa\STK;
 ```
 
 ### Instantiating The Class
-The class uses static methods and does not need to be instantiated. This is to persist configuration in memory troughout execution of the script. To pass configuration options to the object, use the `init()` method at the top of your script.
+The class uses static methods and does not need to be instantiated. This is to persist configuration in memory troughout execution of the script. To pass configuration options to the object, use the `init()` method at the top of your script. The `headoffice` key is only required for Till Numbers. Paybill users can ignore it.
 
 ```php
 STK::init(
@@ -73,10 +73,11 @@ STK::init(
         'env'               => 'sandbox',
         'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
         'shortcode'         => '174379',
-        'headoffice'        => '174379',
+        'headoffice'        => '174379', // Ignore if using Paybill
         'key'               => 'Your Consumer Key',
         'secret'            => 'Your Consumer Secret',
-        'username'          => '',
+        'username'          => '', // Required for B2B and B2C APIs only
+        'password'          => '', // Required for B2B and B2C APIs only
         'passkey'           => 'Your Online Passkey',
         'validation_url'    => url('mpesa/validate'),
         'confirmation_url'  => url('mpesa/confirm'),
@@ -86,7 +87,7 @@ STK::init(
 );
 ```
 
-<b>Tip: You can just pass your key and secret and the various URL endpoints for testing on sandbox, the system will use the defaults provided from [Daraja](https://developer.safaricom.co.ke/test_credentials).</b>
+<b>TIP: You can just pass your URL endpoints for testing on sandbox, the system will use the test credentials provided from [Daraja](https://developer.safaricom.co.ke/test_credentials).</b>
 
 ### Making A Payment Request
 Wrap your request in a try catch to ensure proper error handling
@@ -101,32 +102,7 @@ try {
 }
 ```
 
-### Validating/Confirming Transaction Details
-Call either function at your confirmation/validation endpoint
-
-```php
-STK::confirm();
-STK::validate();
-```
-
-These functions take an optional argument for a callback function that processes the response. If none is provided, the function will return a succesful response. The callback function can either be a defined funtion or a closure(anonymous)
-
-```php
-function validate_data($data){
-    // Process $data
-    return true;
-}
-STK::validate('validate_data');
-```
-
-```php
-STK::confirm(function($data){
-    // Process $data
-    return true;
-});
-```
-
-## Reconciling The Payment
+### Reconciling The Payment
 The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data. The callback function can either be a defined funtion or a closure(anonymous). If ommited, the method will return a successful response by default.
 
 ```php
@@ -140,7 +116,7 @@ STK::reconcile(function($data){
 });
 ```
 
-### Timeouts
+### Processing Timeouts
 Sometimes the system times out.
 
 ```php
@@ -241,9 +217,6 @@ You can use the helper functions for more concise code
 To configure the class, use the `mpesa_setup_config` function, passing your configuration options as the first argument, and the API you wish to setup(STK, C2B, B2C, B2B) as the second argument. The API is set to STK by default.
 
 ```php
-/**
- * Define your configuration options and pass them as the argument
-*/
 $config = array(
     'env'               => 'sandbox',
     'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
@@ -276,7 +249,7 @@ To make a STK Prompt request, pass the user's phone number, the amount due, and 
 mpesa_stk_push($phone, $amount, $reference);
 ```
 
-To process c2b transactions, call the function as follows, passing the user's phone number, the amount due, and an optional reference respectively
+To simulate a c2b transaction, call the function as follows, passing the user's phone number, the amount due, and an optional reference respectively
 
 ```php
 mpesa_c2b_request($phone, $amount, $reference);

@@ -18,14 +18,18 @@ class Service
 			'headoffice'        => '174379',
 			'key'               => 'Your Consumer Key',
 			'secret'            => 'Your Consumer Secret',
-			'username'          => '',
-			'passkey'           => 'Your Online Passkey',
+			'username'          => 'apitest',
+			'passkey'           => 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
 			'validation_url'    => '/mpesa/validate',
 			'confirmation_url'  => '/mpesa/confirm',
 			'callback_url'      => '/mpesa/reconcile',
 			'timeout_url'       => '/mpesa/timeout',
 			'results_url'       => '/mpesa/results',
 		);
+
+		if(!isset($configs['headoffice']) || empty($configs['headoffice'])){
+			$defaults['headoffice'] = $configs['shortcode'];
+		}
 
 		$parsed = array_merge($defaults, $configs);
 	
@@ -137,7 +141,6 @@ class Service
 		// 	}
 		// 	}
 
-      	$mpesa = new self;
 		$token = self::token();
       	$endpoint = (self::$config->env == 'live') ? 
 		  	'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' : 
@@ -172,7 +175,7 @@ class Service
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
 		
-		return json_decode($response);
+		return json_decode($response, true);
     }
 
 	/**
@@ -181,7 +184,7 @@ class Service
 	 * @param string $receiver
 	 * @param int $receiver_type
 	 * @param string $remarks
-	 * @param string $occassion\
+	 * @param string $occassion
 	 * 
 	 * @return array Response
 	 */

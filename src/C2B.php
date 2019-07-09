@@ -7,11 +7,11 @@ use Osen\Mpesa\Service;
 class C2B extends Service
 {
     /**
-     * Registers your confirmation and validation URLs to M-Pesa
+     * Registers your confirmation and validation URLs to M-Pesa.
      * Whenever M-Pesa receives a transaction on the shortcode, it triggers a validation request against the validation URL and the 3rd party system responds to M-Pesa with a validation response (either a success or an error code). 
      * M-Pesa completes or cancels the transaction depending on the validation response it receives from the 3rd party system. A confirmation request of the transaction is then sent by M-Pesa through the confirmation URL back to the 3rd party which then should respond with a success acknowledging the confirmation.
      */
-    public static function register()
+    public static function register($callback = null)
     {
         $token      = parent::token();
 
@@ -43,12 +43,16 @@ class C2B extends Service
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		$response   = curl_exec($curl);
 
-		$content    = json_decode($response);
-        $status     = ($response || isset($content->ResponseDescription)) 
-            ? $content->ResponseDescription 
-            : 'Sorry could not connect to Daraja. Check your configuration and try again.';
-		
-        return array('Registration status' => $status);
+		$content    = json_decode($response, true);
+        
+		if(is_null($callback)){
+            $status     = ($response || isset($content['ResponseDescription'])) 
+                ? $content['ResponseDescription'] 
+                : 'Sorry could not connect to Daraja. Check your connection/configuration and try again.';
+            return array('Registration status' => $status);
+        } else {
+            return \call_user_func_array($callback, $content);
+        }
     }
 
 	/**

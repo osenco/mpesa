@@ -1,20 +1,20 @@
 # Sample Controller For Laravel
-
 ## The Mpesa Controller
-
 We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See [this example](examples/MpesaController.php) for sample code.
 
 ```bash
 php artisan make:controller MpesaController
 ```
+or create a file called `MpesaController.php` in the `app/Htp/Controolers` and copy the contents of the [sample controller](examples/MpesaController.php) into the newl created file.
 
 ### Import Class With Namespace
+Put this code at the top of the controller to make the M-PESA class available for use.
+
 ```php
 use Osen\Mpesa\STK;
 ```
 
 ### Instantiating The Class
-
 In your controller's constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 
 
 ```php
@@ -41,17 +41,16 @@ STK::init(
 You can set your Laravel routes so as to create endpoints for interaction between Mpesa and your Laravel installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
 
 ```php
-Route::prefix('mpesa')->group(
-  function ()
-  {
-    Route::any('pay', 'MpesaController@pay');
-    Route::any('validate', 'MpesaController@validation');
-    Route::any('confirm', 'MpesaController@confirmation');
-    Route::any('results', 'MpesaController@results');
-    Route::any('timeout', 'MpesaController@timeout');
-    Route::any('reconcile', 'MpesaController@reconcile');
-  }
-);
+Route::prefix('mpesa')->group(function ()
+{
+  Route::any('pay', 'MpesaController@pay');
+  Route::any('validate', 'MpesaController@validation');
+  Route::any('confirm', 'MpesaController@confirmation');
+  Route::any('results', 'MpesaController@results');
+  Route::any('register', 'MpesaController@register');
+  Route::any('timeout', 'MpesaController@timeout');
+  Route::any('reconcile', 'MpesaController@reconcile');
+});
 ```
 
 ### CSRF verification
