@@ -5,7 +5,7 @@ We will need a controller to handle MPesa Transactions and save them to a databa
 ```bash
 php artisan make:controller MpesaController
 ```
-or create a file called `MpesaController.php` in the `app/Htp/Controolers` and copy the contents of the [sample controller](examples/MpesaController.php) into the newl created file.
+or create a file called `MpesaController.php` in the `app/Http/Controllers` and copy the contents of the [sample controller](examples/MpesaController.php) into the newl created file.
 
 ### Import Class With Namespace
 Put this code at the top of the controller to make the M-PESA class available for use.

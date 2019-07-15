@@ -117,7 +117,7 @@ STK::reconcile(function($data){
 ```
 
 ### Processing Timeouts
-Sometimes the system times out.
+When a valid M-Pesa API request is received by the API Gateway, it is sent to M-Pesa where it is added to a queue. M-Pesa then processes the requests in the queue and sends a response to the API Gateway which then forwards the response to the URL registered in the CallBackURL or ResultURL request parameter. Whenever M-Pesa receives more requests than the queue can handle, M-Pesa responds by rejecting any more requests and the API Gateway sends a queue timeout response to the URL registered in the QueueTimeOutURL request parameter. Use the `timeout()` method to process this response.
 
 ```php
 STK::timeout();

@@ -5,7 +5,7 @@ namespace Osen\Mpesa;
 class Service
 {
 	/**
-	 * @var array $configs Configuration options
+	 * @var object $config Configuration options
 	 */
     public static $config;
 
