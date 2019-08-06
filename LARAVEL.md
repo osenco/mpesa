@@ -50,6 +50,8 @@ Route::prefix('mpesa')->group(function ()
   Route::any('register', 'MpesaController@register');
   Route::any('timeout', 'MpesaController@timeout');
   Route::any('reconcile', 'MpesaController@reconcile');
+  Route::any('reverse', 'MpesaController@reverse');
+  Route::any('status', 'MpesaController@status');
 });
 ```
 

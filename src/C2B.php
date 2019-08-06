@@ -15,9 +15,9 @@ class C2B extends Service
     {
         $token      = parent::token();
 
-		$endpoint   = (parent::$config->env == 'live') ? 
-            'https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl' : 
-            'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl';
+		$endpoint   = (parent::$config->env == 'live') 
+            ? 'https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl' 
+            : 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl';
 
 		$curl       = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
@@ -43,28 +43,30 @@ class C2B extends Service
 		curl_setopt($curl, CURLOPT_HEADER, false);
 		$response   = curl_exec($curl);
 
-		$content    = json_decode($response, true);
+		$result     = json_decode($response, true);
         
 		if(is_null($callback)){
-            $status     = ($response || isset($content['ResponseDescription'])) 
-                ? $content['ResponseDescription'] 
+            $status     = ($response || isset($result['ResponseDescription'])) 
+                ? $result['ResponseDescription'] 
                 : 'Sorry could not connect to Daraja. Check your connection/configuration and try again.';
-            return array('Registration status' => $status);
+            return array(
+                'Registration status' => $status
+            );
         } else {
-            return \call_user_func_array($callback, $content);
+            return \call_user_func_array($callback, $result);
         }
     }
 
 	/**
 	 * Simulates a C2B request
-	 * @param string $phone Receiving party phone
-	 * @param int $amount Amount to transfer
-	 * @param string $command Command ID
-	 * @param string $reference 
+	 * @param $phone Receiving party phone
+	 * @param $amount Amount to transfer
+	 * @param $command Command ID
+	 * @param $reference 
 	 * 
 	 * @return array
 	 */
-    public static function send(string $phone = null, int $amount = 10, string $reference = 'TRX', string $command = '')
+    public static function send($phone = null, $amount = 10, $reference = 'TRX', $command = '')
     {
         $token = parent::token();
 

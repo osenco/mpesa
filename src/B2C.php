@@ -8,15 +8,15 @@ class B2C extends Service
 {
 	/**
 	 * Transfer funds between two paybills
-	 * @param string $receiver Receiving party phone
-	 * @param int $amount Amount to transfer
-	 * @param string $command Command ID
-	 * @param string $occassion
-	 * @param string $remarks
+	 * @param $receiver Receiving party phone
+	 * @param $amount Amount to transfer
+	 * @param $command Command ID
+	 * @param $occassion
+	 * @param $remarks
 	 * 
 	 * @return array
 	 */
-    public static function send(string $receiver, int $amount = 10, string $command = 'TRX', string $remarks = '', string $occassion = '')
+    public static function send($receiver, $amount = 10, $command = 'TRX', $remarks = '', $occassion = '')
     {
         $token  = parent::token();
 

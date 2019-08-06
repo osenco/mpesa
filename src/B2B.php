@@ -8,16 +8,16 @@ class B2B extends Service
 {
 	/**
 	 * Transfer funds between two paybills
-	 * @param string $receiver Receiving party paybill
-	 * @param string $receiver_type Receiver party type
-	 * @param int $amount Amount to transfer
-	 * @param string $command Command ID
-	 * @param string $reference Account Reference mandatory for “BusinessPaybill” CommandID.
-	 * @param string $remarks
+	 * @param $receiver Receiving party paybill
+	 * @param $receiver_type Receiver party type
+	 * @param $amount Amount to transfer
+	 * @param $command Command ID
+	 * @param $reference Account Reference mandatory for “BusinessPaybill” CommandID.
+	 * @param $remarks
 	 * 
 	 * @return array
 	 */
-    public static function send(string $receiver, string $receiver_type, int $amount = 10, $command = '',  string $reference = 'TRX', string $remarks = '')
+    public static function send($receiver, $receiver_type, $amount = 10, $command = '',  $reference = 'TRX', $remarks = '')
     {
         $token 		= parent::token();
 

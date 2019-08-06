@@ -13,7 +13,7 @@ use Osen\Mpesa\C2B;
 ## Instantiating The Class
 Remember to add the Mpesa web portal username when setting up the class. 
 
-````php
+```php
 C2B::init(
   array(
     'env'               => 'sandbox',
@@ -30,7 +30,7 @@ C2B::init(
     'timeout_url'       => url('mpesa/timeout'),
   )
 );
-````
+```
 
 ## The Validation/Confirmation URLs
 Whenever M-Pesa receives a transaction on your shortcode, a validation request is sent to the validation URL registered above. M-Pesa completes or cancels the transaction depending on the validation response it receives.
@@ -47,12 +47,41 @@ C2B::register();
 or
 
 ```php
-C2B::register(function($response){
+C2B::register(function ($response){
   // Do something with $response, like echo $response['ResponseDescription']
 });
 ```
 
-## Process the Payment
+## Validate the Payment Data
+When a user pays via M-Pesa, and validation is enabled for your shortcode, M-Pesa sends a request to your validation endpoint. The transaction data is sent with this request, and you can use the `validate` method of the `C2B` class to check the validity of this information, then return true. The method allows you to pass a callback function to process the data received.
+```php
+C2B::validate();
+``` 
+
+or
+
+```php
+C2B::validate(function ($response){
+  // Process $response
+  $TransactionType    = $response['TransactionType'];
+  $TransID            = $response['TransID'];
+  $TransTime          = $response['TransTime'];
+  $TransAmount        = $response['TransAmount'];
+  $BusinessShortCode  = $response['BusinessShortCode'];
+  $BillRefNumber      = $response['BillRefNumber'];
+  $InvoiceNumber      = $response['InvoiceNumber'];
+  $OrgAccountBalance  = $response['OrgAccountBalance'];
+  $ThirdPartyTransID  = $response['ThirdPartyTransID'];
+  $MSISDN             = $response['MSISDN'];
+  $FirstName          = $response['FirstName'];
+  $MiddleName         = $response['MiddleName'];
+  $LastName           = $response['LastName'];
+
+  return true;
+});
+```
+
+## Process the Payment (Confirmation)
 If you return a success response at the validation endpoint. a confirmation request of the transaction is sent by M-Pesa to the confirmation URL. The transaction data is sent with this request, and you can use the `confirm` method of the `C2B` class to save this information, then return true. The method allows you to pass a callback function to process the data received.
 ```php
 C2B::confirm();
@@ -61,23 +90,24 @@ C2B::confirm();
 or
 
 ```php
-C2B::confirm(function($response){
+C2B::confirm(function ($response){
   // Process $response
-  // $TransactionType    = $response['TransactionType'];
-  // $TransID            = $response['TransID'];
-  // $TransTime          = $response['TransTime'];
-  // $TransAmount        = $response['TransAmount'];
-  // $BusinessShortCode  = $response['BusinessShortCode'];
-  // $BillRefNumber      = $response['BillRefNumber'];
-  // $InvoiceNumber      = $response['InvoiceNumber'];
-  // $OrgAccountBalance  = $response['OrgAccountBalance'];
-  // $ThirdPartyTransID  = $response['ThirdPartyTransID'];
-  // $MSISDN             = $response['MSISDN'];
-  // $FirstName          = $response['FirstName'];
-  // $MiddleName         = $response['MiddleName'];
-  // $LastName           = $response['LastName'];
+  $TransactionType    = $response['TransactionType'];
+  $TransID            = $response['TransID'];
+  $TransTime          = $response['TransTime'];
+  $TransAmount        = $response['TransAmount'];
+  $BusinessShortCode  = $response['BusinessShortCode'];
+  $BillRefNumber      = $response['BillRefNumber'];
+  $InvoiceNumber      = $response['InvoiceNumber'];
+  $OrgAccountBalance  = $response['OrgAccountBalance'];
+  $ThirdPartyTransID  = $response['ThirdPartyTransID'];
+  $MSISDN             = $response['MSISDN'];
+  $FirstName          = $response['FirstName'];
+  $MiddleName         = $response['MiddleName'];
+  $LastName           = $response['LastName'];
+
   return true;
 });
 ```
 
-See [the README](README.md) for making and processing payment requests.
+See [the README](README.md) for making and processing other payment requests.

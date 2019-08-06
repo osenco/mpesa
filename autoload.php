@@ -6,11 +6,11 @@
  */
 spl_autoload_register(function ($class)
 {
-    if (substr($class, 0, 10) == 'Osen\Mpesa') {
+    if (strpos($class, 'Osen\Mpesa')) {
         $class  = str_replace('Osen\Mpesa', '', $class);
         $path   = str_replace('\\', '/', $class);
 
-        require_once("src/{$path}.php");
+        require_once "src/{$path}.php";
     }
 });
 

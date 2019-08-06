@@ -7,17 +7,16 @@ use Osen\Mpesa\Service;
 class STK extends Service
 {
     /**
-     * @param int $amount The amount to be transacted.
-     * @param string $phone The MSISDN sending the funds.
-     * @param string $reference Used with M-Pesa PayBills.
-     * @param string $description A description of the transaction.
-     * @param string $remark Remarks
+     * @param $phone The MSISDN sending the funds.
+     * @param $amount The amount to be transacted.
+     * @param $reference Used with M-Pesa PayBills.
+     * @param $description A description of the transaction.
+     * @param $remark Remarks
      * 
      * @return array Response
      */
-    public static function send(string $phone, int $amount, string $reference, string $description = 'Transaction Description', string $remark = 'Remark')
+    public static function send($phone, $amount, $reference = 'ACCOUNT', $description = 'Transaction Description', $remark = 'Remark')
     {
-  
         $token      = parent::token();
         
 		$phone      = (substr($phone, 0,1) == '+') ? str_replace('+', '', $phone) : $phone;

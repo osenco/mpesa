@@ -104,14 +104,31 @@ try {
 
 ### Reconciling The Payment
 The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data. The callback function can either be a defined funtion or a closure(anonymous). If ommited, the method will return a successful response by default.
-
 ```php
 STK::reconcile();
 ```
 
 ```php
-STK::reconcile(function($data){
-    // Process $data
+STK::reconcile(function ($response){
+    $response                   = $response['Body'];
+    $resultCode 			    = $response['stkCallback']['ResultCode'];
+    $resultDesc 			    = $response['stkCallback']['ResultDesc'];
+    $merchantRequestID 			= $response['stkCallback']['MerchantRequestID'];
+    
+    if(isset($response['stkCallback']['CallbackMetadata'])){
+        $CallbackMetadata       = $response['stkCallback']['CallbackMetadata']['Item'];
+
+        $amount                 = $CallbackMetadata[0]['Value'];
+        $mpesaReceiptNumber     = $CallbackMetadata[1]['Value'];
+        $balance                = $CallbackMetadata[2]['Value'];
+        $transactionDate        = $CallbackMetadata[3]['Value'];
+        $phone                  = $CallbackMetadata[4]['Value'];
+    
+        $payment->status        = 'Paid';
+        $payment->amount        = $amount;
+        $payment->receipt       = $mpesaReceiptNumber;
+    }
+
     return true;
 });
 ```
@@ -126,23 +143,136 @@ STK::timeout();
 This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
 
 ```php
-STK::timeout(function($data){
+STK::timeout(function ($data){
     // Process results
     return true;
 });
 ```
 
-### Processing Results
-There are scenarios when Safaricom needs to send data to your application. This could be when you make a balance query, or transaction status check.
-
+### Check Transaction Status
+You can check for the status of a transaction by calling the `status' method at your endpoint.
 ```php
-STK::results();
+STK::status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = 'Transaction Status Query');
 ```
 
-This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
+You can pass an optional fifth argument that is a callback for processing the response from the request and returning true.
 ```php
-STK::results(function($data){
-    // Process results
+STK::status($transaction, $command, $remarks, $occassion, function ($response){
+
+    return true;
+});
+```
+
+### Reverse Transaction
+To reverse a transaction, call the `reverse` method at your endpoint. 
+```php
+STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = 'Transaction Reversal');
+```
+
+You can pass an optional seventh argument that is a callback for processing the response from the request and returning true.
+```php
+STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = '', function ($response){
+
+    return true;
+});
+```
+
+### Check Account Balance
+To reverse a transaction, call the `reverse` method at your endpoint. 
+```php
+STK::balance($command, $remarks = 'Balance Query', $occassion = '');
+```
+
+You can pass an optional fourth argument that is a callback for processing the response from the request and returning true.
+```php
+STK::balance($command, $remarks = 'Balance Query', $occassion = '', function ($response){
+    // Do something with $response
+    return true;
+});
+```
+
+
+### Processing Results
+To process results from a transaction statuscheck, or a reversal, or an account balance check, call the `result` method at your endpoint. 
+```php
+STK::result();
+```
+
+You can pass an optional callback for processing the response from the request and returning true.
+```php
+STK::result(function ($response){
+    // Process account balance check results
+    $result                     = $response['Result'];
+    $ResultType                 = $result['ResultType'];
+	$ResultCode                 = $result['ResultCode'];
+	$ResultDesc                 = $result['ResultDesc'];
+	$OriginatorConversationID   = $result['OriginatorConversationID'];
+	$ConversationID             = $result['ConversationID'];
+	$TransactionID              = $result['TransactionID'];
+	$ResultParameters           = $result['ResultParameters'];
+	
+    $ResultParameter            = $ResultParameters['ResultParameter'];
+	$ReceiptNo                  = $ResultParameter[0]['Value'];
+	$Conversation               = $ResultParameter[1]['Value'];
+	$FinalisedTime              = $ResultParameter[2]['Value'];
+	$Amount                     = $ResultParameter[3]['Value'];
+	$TransactionStatus          = $ResultParameter[4]['Value'];
+	$ReasonType                 = $ResultParameter[5]['Value'];
+    $TransactionReason          = $ResultParameter[6]['Value'];
+    $DebitPartyCharges          = $ResultParameter[7]['Value'];
+    $DebitAccountType           = $ResultParameter[8]['Value'];
+    $InitiatedTime              = $ResultParameter[9]['Value'];
+    $OriginatorConversationID   = $ResultParameter[10]['Value'];
+    $CreditPartyName            = $ResultParameter[11]['Value'];
+    $DebitPartyName             = $ResultParameter[12]['Value'];
+    
+    $ReferenceData              = $result['ReferenceData'];
+    $ReferenceItem              = $ReferenceData['ReferenceItem'];
+	$Occasion                   = $ReferenceItem['Value'];
+
+
+    // Process transaction reversal results
+    $Result                     = $response['Result'];
+	$ResultType                 = $Result['ResultType'];
+	$ResultCode                 = $Result['ResultCode'];
+	$ResultDesc                 = $Result['ResultDesc'];
+	$OriginatorConversationID   = $Result['OriginatorConversationID'];
+	$ConversationID             = $Result['ConversationID'];
+	$TransactionID              = $Result['TransactionID'];
+	$ReferenceData              = $Result['ReferenceData'];
+	$ReferenceItem              = $Result['ReferenceItem'];
+	$QueueTimeoutURL            = $ReferenceItem['Value'];
+
+    // Process transaction status check results
+    $Result                     = $response['Result'];
+	$ResultType                 = $Result['ResultType'];
+	$ResultCode                 = $Result['ResultCode'];
+	$ResultDesc                 = $Result['ResultDesc'];
+	$OriginatorConversationID   = $Result['OriginatorConversationID'];
+	$ConversationID             = $Result['ConversationID'];
+	$TransactionID              = $Result['TransactionID'];
+	$ResultParameters           = $Result['ResultParameters'];
+	$ResultParameter            = $ResultParameters['ResultParameter'];
+	$ReceiptNo                  = $ResultParameter[0]['Value'];
+	$ConversationID             = $ResultParameter[1]['Value'];
+	$FinalisedTime              = $ResultParameter[2]['Value'];
+	$Amount                     = $ResultParameter[3]['Value'];
+	$TransactionStatus          = $ResultParameter[4]['Value'];
+	$ReasonType                 = $ResultParameter[5]['Value'];
+	$TransactionReason          = $ResultParameter[6]['Value'];
+	$DebitPartyCharges          = $ResultParameter[7]['Value'];
+	$DebitAccountType           = $ResultParameter[8]['Value'];
+	$InitiatedTime              = $ResultParameter[9]['Value'];
+	$OriginatorConversationID   = $ResultParameter[10]['Value'];
+	$CreditPartyName            = $ResultParameter[11]['Value'];
+	$DebitPartyName             = $ResultParameter[12]['Value'];
+
+    $ReferenceData              = $result['ReferenceData'];
+    $ReferenceItem              = $ReferenceData['ReferenceItem'];
+	$Occasion                   = $ReferenceItem['Value'];
+
+
+    //TIP: You can differentiate between responses by checking value of $ResultType
     return true;
 });
 ```
@@ -212,9 +342,9 @@ STK::results(function($data){
 </table>
 
 ## Helper Functions
-You can use the helper functions for more concise code
+You can use the helper function s for more concise code
 
-To configure the class, use the `mpesa_setup_config` function, passing your configuration options as the first argument, and the API you wish to setup(STK, C2B, B2C, B2B) as the second argument. The API is set to STK by default.
+To configure the class, use the `mpesa_setup_config` function , passing your configuration options as the first argument, and the API you wish to setup(STK, C2B, B2C, B2B) as the second argument. The API is set to STK by default.
 
 ```php
 $config = array(
@@ -234,7 +364,7 @@ $config = array(
 mpesa_setup_config($config, 'STK');
 ```
 
-Optionally, you could configure with the `mpesa_setup_*` functions
+Optionally, you could configure with the `mpesa_setup_*` function s
 
 ```php
 mpesa_setup_stk($config);

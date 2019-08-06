@@ -31,7 +31,7 @@ class Service
 			$defaults['headoffice'] = $configs['shortcode'];
 		}
 
-		$parsed = array_merge($defaults, $configs);
+		$parsed 		= array_merge($defaults, $configs);
 	
         self::$config 	= (object)$parsed;
     }
@@ -41,9 +41,9 @@ class Service
 	 */
     public static function token()
     {
-        $endpoint = (self::$config->env == 'live') ? 
-			'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials' : 
-			'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+        $endpoint = (self::$config->env == 'live') 
+			? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials' 
+			: 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 
 		$credentials = base64_encode(self::$config->key.':'.self::$config->secret);
         $curl = curl_init();
@@ -60,91 +60,19 @@ class Service
     }
 
 	/**
-	 * @param int $transaction
-	 * @param string $command
-	 * @param string $remarks
-	 * @param string $occassion\
+	 * @param $transaction
+	 * @param $command
+	 * @param $remarks
+	 * @param $occassion\
 	 * 
-	 * @return array Response
+	 * @return array Result
 	 */
-    public static function status(int $transaction, string $command = 'TransactionStatusQuery', string $remarks = 'Transaction Status Query', string $occassion = '')
+    public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = '', $callback = null)
     {
-		// {
-		// 	"Result":{
-		// 		"ResultType":0,
-		// 		"ResultCode":0,
-		// 		"ResultDesc":"The service request has been accepted successfully.",
-		// 		"OriginatorConversationID":"10816-694520-2",
-		// 		"ConversationID":"AG_20170727_000059c52529a8e080bd",
-		// 		"TransactionID":"LGR0000000",
-		// 		"ResultParameters":{
-		// 		"ResultParameter":[
-		// 			{
-		// 			"Key":"ReceiptNo",
-		// 			"Value":"LGR919G2AV"
-		// 			},
-		// 			{
-		// 			"Key":"Conversation ID",
-		// 			"Value":"AG_20170727_00004492b1b6d0078fbe"
-		// 			},
-		// 			{
-		// 			"Key":"FinalisedTime",
-		// 			"Value":20170727101415
-		// 			},
-		// 			{
-		// 			"Key":"Amount",
-		// 			"Value":10
-		// 			},
-		// 			{
-		// 			"Key":"TransactionStatus",
-		// 			"Value":"Completed"
-		// 			},
-		// 			{
-		// 			"Key":"ReasonType",
-		// 			"Value":"Salary Payment via API"
-		// 			},
-		// 			{
-		// 			"Key":"TransactionReason"
-		// 			},
-		// 			{
-		// 			"Key":"DebitPartyCharges",
-		// 			"Value":"Fee For B2C Payment|KES|33.00"
-		// 			},
-		// 			{
-		// 			"Key":"DebitAccountType",
-		// 			"Value":"Utility Account"
-		// 			},
-		// 			{
-		// 			"Key":"InitiatedTime",
-		// 			"Value":20170727101415
-		// 			},
-		// 			{
-		// 			"Key":"Originator Conversation ID",
-		// 			"Value":"19455-773836-1"
-		// 			},
-		// 			{
-		// 			"Key":"CreditPartyName",
-		// 			"Value":"254708374149 - John Doe"
-		// 			},
-		// 			{
-		// 			"Key":"DebitPartyName",
-		// 			"Value":"600134 - Safaricom157"
-		// 			}
-		// 		]
-		// 		},
-		// 		"ReferenceData":{
-		// 		"ReferenceItem":{
-		// 			"Key":"Occasion",
-		// 			"Value":"aaaa"
-		// 		}
-		// 		}
-		// 	}
-		// 	}
-
 		$token = self::token();
-      	$endpoint = (self::$config->env == 'live') ? 
-		  	'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' : 
-			'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
+      	$endpoint = (self::$config->env == 'live') 
+		  	? 'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query' 
+			: 'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
@@ -174,43 +102,29 @@ class Service
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
+		$result = json_decode($response, true);
 		
-		return json_decode($response, true);
+		return is_null($callback) 
+			? $result
+			: \call_user_func_array($callback, array($result));
     }
 
 	/**
-	 * @param int $transaction
-	 * @param int $amount
-	 * @param string $receiver
-	 * @param int $receiver_type
-	 * @param string $remarks
-	 * @param string $occassion
+	 * @param $transaction
+	 * @param $amount
+	 * @param $receiver
+	 * @param $receiver_type
+	 * @param $remarks
+	 * @param $occassion
 	 * 
-	 * @return array Response
+	 * @return array Result
 	 */
-    public static function reverse(int $transaction, int $amount, string $receiver, int $receiver_type = 3, string $remarks = 'Transaction Reversal', string $occassion = '')
+    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = '', $callback = null)
     {
-		// {
-		// 	"Result":{
-		// 		"ResultType":0,
-		// 		"ResultCode":0,
-		// 		"ResultDesc":"The service request has been accepted successfully.",
-		// 		"OriginatorConversationID":"10819-695089-1",
-		// 		"ConversationID":"AG_20170727_00004efadacd98a01d15",
-		// 		"TransactionID":"LGR019G3J2",
-		// 		"ReferenceData":{
-		// 		"ReferenceItem":{
-		// 			"Key":"QueueTimeoutURL",
-		// 			"Value":"https://internalsandbox.safaricom.co.ke/mpesa/reversalresults/v1/submit"
-		// 		}
-		// 		}
-		// 	}
-		// 	}
-
         $token = self::token();
-    	$endpoint = (self::$config->env == 'live') ? 
-			'https://api.safaricom.co.ke/mpesa/reversal/v1/request' : 
-			'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
+    	$endpoint = (self::$config->env == 'live')  
+			? 'https://api.safaricom.co.ke/mpesa/reversal/v1/request' 
+			: 'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
@@ -241,91 +155,22 @@ class Service
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
+		$result = json_decode($response, true);
 		
-		return json_decode($response);
+		return is_null($callback) 
+			? $result
+			: \call_user_func_array($callback, array($result));
     }
 
 	/**
-	 * @param string $command
-	 * @param string $remarks
-	 * @param string $occassion
+	 * @param $command
+	 * @param $remarks
+	 * @param $occassion
 	 * 
-	 * @return array Response
+	 * @return array Result
 	 */
-    public static function balance(string $command, string $remarks = 'Balance Query', string $occassion = '')
+    public static function balance($command, $remarks = 'Balance Query', $occassion = '', $callback = null)
     {
-		// {
-		// 	"Result":{
-		// 		"ResultType":0,
-		// 		"ResultCode":0,
-		// 		"ResultDesc":"The service request has been accepted successfully.",
-		// 		"OriginatorConversationID":"10816-694520-2",
-		// 		"ConversationID":"AG_20170727_000059c52529a8e080bd",
-		// 		"TransactionID":"LGR0000000",
-		// 		"ResultParameters":{
-		// 		"ResultParameter":[
-		// 			{
-		// 			"Key":"ReceiptNo",
-		// 			"Value":"LGR919G2AV"
-		// 			},
-		// 			{
-		// 			"Key":"Conversation ID",
-		// 			"Value":"AG_20170727_00004492b1b6d0078fbe"
-		// 			},
-		// 			{
-		// 			"Key":"FinalisedTime",
-		// 			"Value":20170727101415
-		// 			},
-		// 			{
-		// 			"Key":"Amount",
-		// 			"Value":10
-		// 			},
-		// 			{
-		// 			"Key":"TransactionStatus",
-		// 			"Value":"Completed"
-		// 			},
-		// 			{
-		// 			"Key":"ReasonType",
-		// 			"Value":"Salary Payment via API"
-		// 			},
-		// 			{
-		// 			"Key":"TransactionReason"
-		// 			},
-		// 			{
-		// 			"Key":"DebitPartyCharges",
-		// 			"Value":"Fee For B2C Payment|KES|33.00"
-		// 			},
-		// 			{
-		// 			"Key":"DebitAccountType",
-		// 			"Value":"Utility Account"
-		// 			},
-		// 			{
-		// 			"Key":"InitiatedTime",
-		// 			"Value":20170727101415
-		// 			},
-		// 			{
-		// 			"Key":"Originator Conversation ID",
-		// 			"Value":"19455-773836-1"
-		// 			},
-		// 			{
-		// 			"Key":"CreditPartyName",
-		// 			"Value":"254708374149 - John Doe"
-		// 			},
-		// 			{
-		// 			"Key":"DebitPartyName",
-		// 			"Value":"600134 - Safaricom157"
-		// 			}
-		// 		]
-		// 		},
-		// 		"ReferenceData":{
-		// 		"ReferenceItem":{
-		// 			"Key":"Occasion",
-		// 			"Value":"aaaa"
-		// 		}
-		// 		}
-		// 	}
-		// }
-
         $token = self::token();
       	
         $endpoint = (self::$config->env == 'live')
@@ -359,8 +204,11 @@ class Service
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($curl, CURLOPT_HEADER, false);
         $response = curl_exec($curl);
+		$result = json_decode($response, true);
 		
-		return json_decode($response);
+		return is_null($callback) 
+			? $result
+			: \call_user_func_array($callback, array($result));
     }
 	
 	/**
@@ -370,30 +218,14 @@ class Service
 	 */
     public static function validate($callback = null)
 	{
-		// {
-		// 	"TransactionType":"",
-		// 	"TransID":"LGR219G3EY",
-		// 	"TransTime":"20170727104247",
-		// 	"TransAmount":"10.00",
-		// 	"BusinessShortCode":"600134",
-		// 	"BillRefNumber":"xyz",
-		// 	"InvoiceNumber":"",
-		// 	"OrgAccountBalance":"",
-		// 	"ThirdPartyTransID":"",
-		// 	"MSISDN":"254708374149",
-		// 	"FirstName":"John",
-		// 	"MiddleName":"Doe",
-		// 	"LastName":""
-		// }
-
 		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
-		    return array('ResponseCode' => 0, 'ResponseDesc' => 'Success');
+		    return array('ResultCode' => 0, 'ResultDesc' => 'Success');
 	    } else {
 	        return call_user_func_array($callback, array($data)) 
-				? array('ResponseCode' => 0, 'ResponseDesc' => 'Success') 
-				: array('ResponseCode' => 1, 'ResponseDesc' => 'Failed');
+				? array('ResultCode' => 0, 'ResultDesc' => 'Success') 
+				: array('ResultCode' => 1, 'ResultDesc' => 'Failed');
 	    }
     }
 	
@@ -404,30 +236,14 @@ class Service
 	 */
     public static function confirm($callback = null)
 	{
-		// {
-		// 	"TransactionType":"",
-		// 	"TransID":"LGR219G3EY",
-		// 	"TransTime":"20170727104247",
-		// 	"TransAmount":"10.00",
-		// 	"BusinessShortCode":"600134",
-		// 	"BillRefNumber":"xyz",
-		// 	"InvoiceNumber":"",
-		// 	"OrgAccountBalance":"49197.00",
-		// 	"ThirdPartyTransID":"1234567890",
-		// 	"MSISDN":"254708374149",
-		// 	"FirstName":"John",
-		// 	"MiddleName":"",
-		// 	"LastName":""
-		// }
-
 		$data = json_decode(file_get_contents('php://input'), true);
 
 	    if(is_null($callback)){
-		    return array('ResponseCode' => 0, 'ResponseDesc' => 'Success');
+		    return array('ResultCode' => 0, 'ResultDesc' => 'Success');
 	    } else {
 	        return call_user_func_array($callback, array($data)) 
-				? array('ResponseCode' => 0, 'ResponseDesc' => 'Success') 
-				: array('ResponseCode' => 1, 'ResponseDesc' => 'Failed');
+				? array('ResultCode' => 0, 'ResultDesc' => 'Success') 
+				: array('ResultCode' => 1, 'ResultDesc' => 'Failed');
 	    }
 	}
 	

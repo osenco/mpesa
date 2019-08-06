@@ -1,6 +1,6 @@
 {
     "name": "osenco/mpesa",
-    "description": "Intuitive Mpesa SDK for PHP Apps",
+    "description": "Intuitive Mpesa SDK for PHP Apps. Just Plug 'N Play",
     "type": "library",
     "license": "MIT",
     "authors": [
