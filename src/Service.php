@@ -37,6 +37,39 @@ class Service
         self::$config = (object) $parsed;
     }
 
+    public static function remote_get($endpoint, $credentials = null)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $endpoint);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Basic ' . $credentials));
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        return curl_exec($curl);
+    }
+
+    public static function remote_post($endpoint, $token, $data = array())
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $endpoint);
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type:application/json',
+                'Authorization:Bearer ' . $token,
+            )
+        );
+        $data_string = json_encode($data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+
+        return curl_exec($curl);
+    }
+
     /**
      * @return string Access token
      */
@@ -47,15 +80,9 @@ class Service
         : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 
         $credentials = base64_encode(self::$config->key . ':' . self::$config->secret);
-        $curl        = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Basic ' . $credentials));
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        $curl_response = curl_exec($curl);
+        $response    = self::remote_get($endpoint, $credentials);
 
-        $result = json_decode($curl_response);
+        $result = json_decode($response);
 
         return isset($result->access_token) ? $result->access_token : '';
     }
@@ -70,24 +97,21 @@ class Service
      */
     public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = '', $callback = null)
     {
-        $token    = self::token();
-        $endpoint = (self::$config->env == 'live')
+        $token     = self::token();
+        $env       = self::$config->env;
+        $plaintext = self::$config->password;
+        $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
+
+        openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+        $password = base64_encode($encrypted);
+
+        $endpoint = ($env == 'live')
         ? 'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query'
         : 'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt(
-            $curl,
-            CURLOPT_HTTPHEADER,
-            array(
-                'Content-Type:application/json',
-                'Authorization:Bearer ' . $token,
-            )
-        );
         $curl_post_data = array(
             'Initiator'          => self::$config->username,
-            'SecurityCredential' => self::$config->credentials,
+            'SecurityCredential' => $password,
             'CommandID'          => $command,
             'TransactionID'      => $transaction,
             'PartyA'             => self::$config->shortcode,
@@ -97,12 +121,7 @@ class Service
             'Remarks'            => $remarks,
             'Occasion'           => $occasion,
         );
-        $data_string = json_encode($curl_post_data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $response = curl_exec($curl);
+        $response = self::remote_post($endpoint, $token, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -122,25 +141,22 @@ class Service
      */
     public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = '', $callback = null)
     {
-        $token    = self::token();
-        $endpoint = (self::$config->env == 'live')
+        $token     = self::token();
+        $env       = self::$config->env;
+        $plaintext = self::$config->password;
+        $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
+
+        openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+        $password = base64_encode($encrypted);
+
+        $endpoint = ($env == 'live')
         ? 'https://api.safaricom.co.ke/mpesa/reversal/v1/request'
         : 'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt(
-            $curl,
-            CURLOPT_HTTPHEADER,
-            array(
-                'Content-Type:application/json',
-                'Authorization:Bearer ' . $token,
-            )
-        );
         $curl_post_data = array(
             'CommandID'              => 'TransactionReversal',
             'Initiator'              => self::$config->business,
-            'SecurityCredential'     => self::$config->credentials,
+            'SecurityCredential'     => $password,
             'TransactionID'          => $transaction,
             'Amount'                 => $amount,
             'ReceiverParty'          => $receiver,
@@ -150,12 +166,8 @@ class Service
             'Remarks'                => $remarks,
             'Occasion'               => $occasion,
         );
-        $data_string = json_encode($curl_post_data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $response = curl_exec($curl);
+
+        $response = self::remote_post($endpoint, $token, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -172,39 +184,30 @@ class Service
      */
     public static function balance($command, $remarks = 'Balance Query', $occassion = '', $callback = null)
     {
-        $token = self::token();
+        $token     = self::token();
+        $env       = self::$config->env;
+        $plaintext = self::$config->password;
+        $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
 
-        $endpoint = (self::$config->env == 'live')
+        openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+        $password = base64_encode($encrypted);
+
+        $endpoint = ($env == 'live')
         ? 'https://api.safaricom.co.ke/mpesa/accountbalance/v1/query'
         : 'https://sandbox.safaricom.co.ke/mpesa/accountbalance/v1/query';
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt(
-            $curl,
-            CURLOPT_HTTPHEADER,
-            array(
-                'Content-Type:application/json',
-                'Authorization:Bearer ' . $token,
-            )
-        );
 
         $curl_post_data = array(
             'CommandID'          => $command,
             'Initiator'          => self::$config->username,
-            'SecurityCredential' => self::$config->credentials,
+            'SecurityCredential' => $password,
             'PartyA'             => self::$config->shortcode,
             'IdentifierType'     => self::$config->type,
             'Remarks'            => $remarks,
             'QueueTimeOutURL'    => self::$config->timeout_url,
             'ResultURL'          => self::$config->results_url,
         );
-        $data_string = json_encode($curl_post_data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $response = curl_exec($curl);
+
+        $response = parent::remote_post($endpoint, $token, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -301,5 +304,4 @@ class Service
             : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
         }
     }
-
 }
