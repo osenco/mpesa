@@ -9,7 +9,7 @@ class Service
      */
     public static $config;
 
-    public static function init(array $configs = [])
+    public static function init($configs = array())
     {
         $defaults = array(
             'env'              => 'sandbox',
@@ -81,8 +81,7 @@ class Service
 
         $credentials = base64_encode(self::$config->key . ':' . self::$config->secret);
         $response    = self::remote_get($endpoint, $credentials);
-
-        $result = json_decode($response);
+        $result      = json_decode($response);
 
         return isset($result->access_token) ? $result->access_token : '';
     }
@@ -207,7 +206,7 @@ class Service
             'ResultURL'          => self::$config->results_url,
         );
 
-        $response = parent::remote_post($endpoint, $token, $curl_post_data);
+        $response = self::remote_post($endpoint, $token, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)

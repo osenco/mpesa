@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use App\Payment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-
 use Osen\Mpesa\B2C;
 
 class MpesaController extends Controller
@@ -18,21 +15,19 @@ class MpesaController extends Controller
      */
     public function __construct()
     {
-
         B2C::init(
             array(
-                'env'               => 'sandbox',
-                'type'              => 4,
-                'shortcode'         => '173527',
-                'headoffice'          => '173527',
-                'key'               => 'Your Consumer Key',
-                'secret'            => 'Your Consumer Secret',
-                'username'          => '',
-                'passkey'           => 'Your Online Passkey',
-                'validation_url'    => url('mpesa/validate'),
-                'confirmation_url'  => url('mpesa/confirm'),
-                'callback_url'      => url('mpesa/reconcile'),
-                'results_url'       => url('mpesa/timeout'),
+                'env'              => 'sandbox',
+                'shortcode'        => '173527',
+                'headoffice'       => '173527',
+                'key'              => 'Your Consumer Key',
+                'secret'           => 'Your Consumer Secret',
+                'username'         => 'Your Org Username',
+                'password'         => 'Your Org Password',
+                'validation_url'   => url('disburse/validate'),
+                'confirmation_url' => url('disburse/confirm'),
+                'callback_url'     => url('disburse/reconcile'),
+                'results_url'      => url('disburse/timeout'),
             )
         );
     }
@@ -48,51 +43,56 @@ class MpesaController extends Controller
         $data = $request->all();
 
         try {
-            $res = B2C($request->phone, $request->amount, $request->reference);
+            $request = B2C::send($request->phone, $request->amount, $request->command, $request->remarks, $request->occassion, function ($response) {
+                $ConversationID           = $response["ConversationID"];
+                $OriginatorConversationID = $response["OriginatorConversationID"];
+                $ResponseCode             = $response["ResponseCode"];
+                $ResponseDescription      = $response["ResponseDescription"];
 
-            if(!isset($res['errorCode'])){
-                $data['ref']            = $res->MerchantRequestID;
-                $payment                = Payment::create($data);
-        
-                if($payment){
-                    return array('msg' => 'saved' );
-                } else {
-                    return array('msg' => 'failed' );
-                }
+                // TIP: Save $OriginatorConversationID in the database, and use it as a key for update
+                $data['request_id'] = $OriginatorConversationID;
+                $payment            = Payment::create($data);
 
-                return Redirect::back();
-            }
-        } catch (\Exception $e) {
-            return array('msg' => $e->getMessage );
-            return Redirect::back();
-        }
-    }
-
-    public function reconcile(Request $request, $method = 'mpesa')
-    {
-        if ($method == 'mpesa') {
-            $response = B2C::reconcile($request->getContent(), function ($data)
-            {
-                $response = json_decode( true );
-                return isset( $response['Body']['stkCallback'] ) ? $response['Body']['stkCallback'] : null;
+                return true;
             });
-            
-            $payment = Payment::where('mpesa', $response['MerchantRequestID'])->first();
-            $payment->status = 'Paid';
-            if ($payment->save()) {
-                return array('status' => 0);
-            }
-        }
-    }
 
-    public function validation()
-    {
-        return B2C::validate();
+            return back();
+        } catch (\Exception $e) {
+            return array('msg' => $e->getMessage);
+        }
     }
 
     public function confirmation()
     {
-        return B2C::confirm();
+        return B2C::reconcile(function ($response) {
+            $Result                              = $response["Result"];
+            $ResultType                          = $Result["ResultType"];
+            $ResultCode                          = $Result["ResultCode"];
+            $ResultDesc                          = $Result["ResultDesc"];
+            $OriginatorConversationID            = $Result["OriginatorConversationID"];
+            $ConversationID                      = $Result["ConversationID"];
+            $TransactionID                       = $Result["TransactionID"];
+            $ResultParameters                    = $Result["ResultParameters"];
+            $ResultParameter                     = $Result["ResultParameters"]["ResultParameter"];
+            $TransactionReceipt                  = $ResultParameter[0]["Value"];
+            $TransactionAmount                   = $ResultParameter[1]["Value"];
+            $B2CWorkingAccountAvailableFunds     = $ResultParameter[2]["Value"];
+            $B2CUtilityAccountAvailableFunds     = $ResultParameter[3]["Value"];
+            $TransactionCompletedDateTime        = $ResultParameter[4]["Value"];
+            $ReceiverPartyPublicName             = $ResultParameter[5]["Value"];
+            $B2CChargesPaidAccountAvailableFunds = $ResultParameter[6]["Value"];
+            $B2CRecipientIsRegisteredCustomer    = $ResultParameter[7]["Value"];
+            $ReferenceData                       = $Result["ReferenceData"];
+            $ReferenceItem                       = $ReferenceData["ReferenceItem"];
+            $QueueTimeoutURL                     = $ReferenceItem[0]["Value"];
+
+            // Update Database record with $TransactionID as the MPESA receipt number where $OriginatorConversationID
+            $payment          = Payment::where('request_id', $OriginatorConversationID)->first();
+            $payment->receipt = $TransactionID;
+            $payment->save();
+
+            return true;
+        });
     }
 
     public function results()

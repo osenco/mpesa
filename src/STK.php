@@ -15,7 +15,7 @@ class STK extends Service
      *
      * @return array Response
      */
-    public static function send($phone, $amount, $reference = 'ACCOUNT', $description = 'Transaction Description', $remark = 'Remark')
+    public static function send($phone, $amount, $reference = 'ACCOUNT', $description = 'Transaction Description', $remark = 'Remark', $callback = null)
     {
         $token = parent::token();
 
@@ -44,8 +44,11 @@ class STK extends Service
         );
         
         $response = parent::remote_post($endpoint, $token, $curl_post_data);
+        $result   = json_decode($response, true);
 
-        return json_decode($response, true);
+        return is_null($callback)
+        ? $result
+        : \call_user_func_array($callback, array($result));
     }
 
 }

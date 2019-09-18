@@ -17,7 +17,7 @@ class B2B extends Service
      *
      * @return array
      */
-    public static function send($receiver, $receiver_type, $amount = 10, $command = '', $reference = 'TRX', $remarks = '')
+    public static function send($receiver, $receiver_type, $amount = 10, $command = '', $reference = 'TRX', $remarks = '', $callback = null)
     {
         $token = parent::token();
 
@@ -48,7 +48,10 @@ class B2B extends Service
             'ResultURL'              => parent::$config->result_url,
         );
         $response = parent::remote_post($endpoint, $token, $curl_post_data);
+        $result   = json_decode($response, true);
 
-        return json_decode($response, true);
+        return is_null($callback)
+        ? $result
+        : \call_user_func_array($callback, array($result));
     }
 }

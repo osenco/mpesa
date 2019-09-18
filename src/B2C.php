@@ -16,7 +16,7 @@ class B2C extends Service
      *
      * @return array
      */
-    public static function send($phone, $amount = 10, $command = 'BusinessPayment', $remarks = '', $occassion = '')
+    public static function send($phone, $amount = 10, $command = 'BusinessPayment', $remarks = '', $occassion = '', $callback = null)
     {
         $token    = parent::token();
         $phone    = (substr($phone, 0, 1) == '+') ? str_replace('+', '', $phone) : $phone;
@@ -47,8 +47,11 @@ class B2C extends Service
         );
 
         $response = parent::remote_post($endpoint, $token, $curl_post_data);
+        $result   = json_decode($response, true);
 
-        return json_decode($response, true);
+        return is_null($callback)
+        ? $result
+        : \call_user_func_array($callback, array($result));
     }
 
 }

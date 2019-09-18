@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use App\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-
 use Osen\Mpesa\STK;
+use Osen\Mpesa\C2B;
 
 class MpesaController extends Controller
 {
@@ -21,17 +20,29 @@ class MpesaController extends Controller
 
         STK::init(
             array(
-                'env'               => 'sandbox',
-                'type'              => 4,
-                'shortcode'         => '173527',
-                'headoffice'          => '173527',
-                'key'               => 'Your Consumer Key',
-                'secret'            => 'Your Consumer Secret',
-                'passkey'           => 'Your Online Passkey',
-                'validation_url'    => url('mpesa/validate'),
-                'confirmation_url'  => url('mpesa/confirm'),
-                'callback_url'      => url('mpesa/reconcile'),
-                'results_url'       => url('mpesa/timeout'),
+                'env'            => 'sandbox',
+                'type'           => 4,
+                'shortcode'      => '173527',
+                'headoffice'     => '173527',
+                'key'            => 'Your Consumer Key',
+                'secret'         => 'Your Consumer Secret',
+                'passkey'        => 'Your Online Passkey',
+                'validation_url' => url('lnmo/validate'),
+                'callback_url'   => url('lnmo/reconcile'),
+                'timeout_url'    => url('lnmo/timeout'),
+            )
+        );
+
+        C2B::init(
+            array(
+                'env'              => 'sandbox',
+                'type'             => 4,
+                'shortcode'        => '174379',
+                'key'              => 'Your Consumer Key',
+                'secret'           => 'Your Consumer Secret',
+                'validation_url'   => url('lnmo/validate'),
+                'confirmation_url' => url('lnmo/confirm'),
+                'timeout_url'      => url('lnmo/timeout'),
             )
         );
     }
@@ -49,30 +60,29 @@ class MpesaController extends Controller
         try {
             $res = STK($request->phone, $request->amount, $request->reference);
 
-            if(!isset($res['errorCode'])){
-                $data['ref']            = $res->MerchantRequestID;
-                $payment                = Payment::create($data);
-        
-                if($payment){
-                    return array('msg' => 'saved' );
+            if (!isset($res['errorCode'])) {
+                $data['ref'] = $res->MerchantRequestID;
+                $payment     = Payment::create($data);
+
+                if ($payment) {
+                    return array('msg' => 'saved');
                 } else {
-                    return array('msg' => 'failed' );
+                    return array('msg' => 'failed');
                 }
 
-                return Redirect::back();
+                return back();
             }
         } catch (\Exception $e) {
-            return array('msg' => $e->getMessage() );
-            return Redirect::back();
+            return array('msg' => $e->getMessage());
+            return back();
         }
     }
 
     public function reconcile(Request $request, $method = 'mpesa')
     {
         if ($method == 'mpesa') {
-            $response = STK::reconcile(function ($data)
-            {
-                $payment = Payment::where('mpesa', $data['MerchantRequestID'])->first();
+            $response = STK::reconcile(function ($data) {
+                $payment         = Payment::where('mpesa', $data['MerchantRequestID'])->first();
                 $payment->status = 'Paid';
 
                 return $payment->save();
@@ -87,7 +97,24 @@ class MpesaController extends Controller
 
     public function confirmation()
     {
-        return STK::confirm();
+        return C2B::confirm(function ($response) {
+            // Process $response
+            $TransactionType   = $response['TransactionType'];
+            $TransID           = $response['TransID'];
+            $TransTime         = $response['TransTime'];
+            $TransAmount       = $response['TransAmount'];
+            $BusinessShortCode = $response['BusinessShortCode'];
+            $BillRefNumber     = $response['BillRefNumber'];
+            $InvoiceNumber     = $response['InvoiceNumber'];
+            $OrgAccountBalance = $response['OrgAccountBalance'];
+            $ThirdPartyTransID = $response['ThirdPartyTransID'];
+            $MSISDN            = $response['MSISDN'];
+            $FirstName         = $response['FirstName'];
+            $MiddleName        = $response['MiddleName'];
+            $LastName          = $response['LastName'];
+
+            return true;
+        });
     }
 
     public function results()

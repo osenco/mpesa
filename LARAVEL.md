@@ -27,11 +27,11 @@ STK::init(
     'key'               => 'Your Consumer Key',
     'secret'            => 'Your Consumer Secret',
     'passkey'           => 'Your Online Passkey',
-    'validation_url'    => url('mpesa/validate'),
-    'confirmation_url'  => url('mpesa/confirm'),
-    'callback_url'      => url('mpesa/reconcile'),
-    'results_url'       => url('mpesa/results'),
-    'timeout_url'       => url('mpesa/timeout'),
+    'validation_url'    => url('lnmo/validate'),
+    'confirmation_url'  => url('lnmo/confirm'),
+    'callback_url'      => url('lnmo/reconcile'),
+    'results_url'       => url('lnmo/results'),
+    'timeout_url'       => url('lnmo/timeout'),
   )
 );
 ```
@@ -41,7 +41,7 @@ STK::init(
 You can set your Laravel routes so as to create endpoints for interaction between Mpesa and your Laravel installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
 
 ```php
-Route::prefix('mpesa')->group(function ()
+Route::prefix('lnmo')->group(function ()
 {
   Route::any('pay', 'MpesaController@pay');
   Route::any('validate', 'MpesaController@validation');
@@ -56,7 +56,7 @@ Route::prefix('mpesa')->group(function ()
 ```
 
 ### CSRF verification
-Remember to add `mpesa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from Mpesa.
+Remember to add `lnmo/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from Mpesa.
 
 
 See [the README](README.md) for making and processing payment requests.
