@@ -9,8 +9,9 @@ class Service
      */
     public static $config;
 
-    public static function init($configs = array())
+    public static function init($configs)
     {
+        $base = (isset($_SERVER['HTTPS']) ? 'https' : 'http' ). "://" . $_SERVER['SERVER_NAME'];
         $defaults = array(
             'env'              => 'sandbox',
             'type'             => 4,
@@ -21,20 +22,24 @@ class Service
             'username'         => 'apitest',
             'password'         => '',
             'passkey'          => 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
-            'validation_url'   => '/mpesa/validate',
-            'confirmation_url' => '/mpesa/confirm',
-            'callback_url'     => '/mpesa/reconcile',
-            'timeout_url'      => '/mpesa/timeout',
-            'results_url'      => '/mpesa/results',
+            'validation_url'   => $base.'/lipwa/validate',
+            'confirmation_url' => $base.'/lipwa/confirm',
+            'callback_url'     => $base.'/lipwa/reconcile',
+            'timeout_url'      => $base.'/lipwa/timeout',
+            'result_url'      => $base.'/lipwa/results',
         );
 
         if (!empty($configs) && (!isset($configs['headoffice']) || empty($configs['headoffice']))) {
             $defaults['headoffice'] = $configs['shortcode'];
         }
 
-        $parsed = array_merge($defaults, $configs);
+        foreach ($defaults as $key => $value) {
+            if (isset($configs[$key])) {
+                $defaults[$key] = $configs[$key];
+            }
+        }
 
-        self::$config = (object) $parsed;
+        self::$config = (object) $defaults;
     }
 
     public static function remote_get($endpoint, $credentials = null)
@@ -49,9 +54,10 @@ class Service
         return curl_exec($curl);
     }
 
-    public static function remote_post($endpoint, $token, $data = array())
+    public static function remote_post($endpoint, $data = array())
     {
-        $curl = curl_init();
+        $token = self::token();
+        $curl  = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
             $curl,
@@ -94,9 +100,8 @@ class Service
      *
      * @return array Result
      */
-    public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = '', $callback = null)
+    public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = 'Transaction Status Query', $callback = null)
     {
-        $token     = self::token();
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
@@ -105,8 +110,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == 'live')
-        ? 'https://api.safaricom.co.ke/mpesa/transactionstatus/v1/query'
-        : 'https://sandbox.safaricom.co.ke/mpesa/transactionstatus/v1/query';
+        ? 'https://api.safaricom.co.ke/lipwa/transactionstatus/v1/query'
+        : 'https://sandbox.safaricom.co.ke/lipwa/transactionstatus/v1/query';
 
         $curl_post_data = array(
             'Initiator'          => self::$config->username,
@@ -120,7 +125,7 @@ class Service
             'Remarks'            => $remarks,
             'Occasion'           => $occasion,
         );
-        $response = self::remote_post($endpoint, $token, $curl_post_data);
+        $response = self::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -138,9 +143,8 @@ class Service
      *
      * @return array Result
      */
-    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = '', $callback = null)
+    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = 'Transaction Reversal', $callback = null)
     {
-        $token     = self::token();
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
@@ -149,8 +153,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == 'live')
-        ? 'https://api.safaricom.co.ke/mpesa/reversal/v1/request'
-        : 'https://sandbox.safaricom.co.ke/mpesa/reversal/v1/request';
+        ? 'https://api.safaricom.co.ke/lipwa/reversal/v1/request'
+        : 'https://sandbox.safaricom.co.ke/lipwa/reversal/v1/request';
 
         $curl_post_data = array(
             'CommandID'              => 'TransactionReversal',
@@ -166,7 +170,7 @@ class Service
             'Occasion'               => $occasion,
         );
 
-        $response = self::remote_post($endpoint, $token, $curl_post_data);
+        $response = self::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -183,7 +187,6 @@ class Service
      */
     public static function balance($command, $remarks = 'Balance Query', $occassion = '', $callback = null)
     {
-        $token     = self::token();
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . 'certs/' . $env . '/cert.cr');
@@ -192,8 +195,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == 'live')
-        ? 'https://api.safaricom.co.ke/mpesa/accountbalance/v1/query'
-        : 'https://sandbox.safaricom.co.ke/mpesa/accountbalance/v1/query';
+        ? 'https://api.safaricom.co.ke/lipwa/accountbalance/v1/query'
+        : 'https://sandbox.safaricom.co.ke/lipwa/accountbalance/v1/query';
 
         $curl_post_data = array(
             'CommandID'          => $command,
@@ -206,7 +209,7 @@ class Service
             'ResultURL'          => self::$config->results_url,
         );
 
-        $response = self::remote_post($endpoint, $token, $curl_post_data);
+        $response = self::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)
@@ -260,11 +263,11 @@ class Service
         $response = json_decode(file_get_contents('php://input'), true);
 
         if (is_null($callback)) {
-            return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+            return array('ResultCode' => 0, 'ResultDesc' => 'Service request successful');
         } else {
             return call_user_func_array($callback, array($response))
-            ? array('resultCode' => 0, 'resultDesc' => 'Service request successful')
-            : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+            ? array('ResultCode' => 0, 'ResultDesc' => 'Service request successful')
+            : array('ResultCode' => 1, 'ResultDesc' => 'Service request failed');
         }
     }
 
@@ -278,11 +281,11 @@ class Service
         $response = json_decode(file_get_contents('php://input'), true);
 
         if (is_null($callback)) {
-            return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+            return array('ResultCode' => 0, 'ResultDesc' => 'Service request successful');
         } else {
             return call_user_func_array($callback, array($response))
-            ? array('resultCode' => 0, 'resultDesc' => 'Service request successful')
-            : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+            ? array('ResultCode' => 0, 'ResultDesc' => 'Service request successful')
+            : array('ResultCode' => 1, 'ResultDesc' => 'Service request failed');
         }
     }
 
@@ -296,11 +299,11 @@ class Service
         $response = json_decode(file_get_contents('php://input'), true);
 
         if (is_null($callback)) {
-            return array('resultCode' => 0, 'resultDesc' => 'Service request successful');
+            return array('ResultCode' => 0, 'ResultDesc' => 'Service request successful');
         } else {
             return call_user_func_array($callback, array($response))
-            ? array('resultCode' => 0, 'resultDesc' => 'Service request successful')
-            : array('resultCode' => 1, 'resultDesc' => 'Service request failed');
+            ? array('ResultCode' => 0, 'ResultDesc' => 'Service request successful')
+            : array('ResultCode' => 1, 'ResultDesc' => 'Service request failed');
         }
     }
 }

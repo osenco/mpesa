@@ -17,8 +17,6 @@ class STK extends Service
      */
     public static function send($phone, $amount, $reference = 'ACCOUNT', $description = 'Transaction Description', $remark = 'Remark', $callback = null)
     {
-        $token = parent::token();
-
         $phone     = (substr($phone, 0, 1) == '+') ? str_replace('+', '', $phone) : $phone;
         $phone     = (substr($phone, 0, 1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
         $timestamp = date('YmdHis');
@@ -43,7 +41,7 @@ class STK extends Service
             'Remark'            => $remark,
         );
         
-        $response = parent::remote_post($endpoint, $token, $curl_post_data);
+        $response = parent::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 
         return is_null($callback)

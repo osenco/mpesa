@@ -27,9 +27,9 @@ class MpesaController extends Controller
                 'key'            => 'Your Consumer Key',
                 'secret'         => 'Your Consumer Secret',
                 'passkey'        => 'Your Online Passkey',
-                'validation_url' => url('lnmo/validate'),
-                'callback_url'   => url('lnmo/reconcile'),
-                'timeout_url'    => url('lnmo/timeout'),
+                'validation_url' => url('lipwa/validate'),
+                'callback_url'   => url('lipwa/reconcile'),
+                'timeout_url'    => url('lipwa/timeout'),
             )
         );
 
@@ -40,9 +40,9 @@ class MpesaController extends Controller
                 'shortcode'        => '174379',
                 'key'              => 'Your Consumer Key',
                 'secret'           => 'Your Consumer Secret',
-                'validation_url'   => url('lnmo/validate'),
-                'confirmation_url' => url('lnmo/confirm'),
-                'timeout_url'      => url('lnmo/timeout'),
+                'validation_url'   => url('lipwa/validate'),
+                'confirmation_url' => url('lipwa/confirm'),
+                'timeout_url'      => url('lipwa/timeout'),
             )
         );
     }

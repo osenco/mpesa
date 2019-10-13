@@ -23,11 +23,11 @@ C2B::init(
     'key'               => 'Your Consumer Key',
     'secret'            => 'Your Consumer Secret',
     'passkey'           => 'Your Online Passkey',
-    'validation_url'    => url('lnmo/validate'),
-    'confirmation_url'  => url('lnmo/confirm'),
-    'callback_url'      => url('lnmo/reconcile'),
-    'results_url'       => url('lnmo/results'),
-    'timeout_url'       => url('lnmo/timeout'),
+    'validation_url'    => url('lipwa/validate'),
+    'confirmation_url'  => url('lipwa/confirm'),
+    'callback_url'      => url('lipwa/reconcile'),
+    'results_url'       => url('lipwa/results'),
+    'timeout_url'       => url('lipwa/timeout'),
   )
 );
 ```
