@@ -5,7 +5,7 @@
  */
 
 if (!function_exists('mpesa_setup_mpesa')) {
-    function mpesa_setup_config(array $config = [], $api = 'STK')
+    function mpesa_setup_config($config = [], $api = 'STK')
     {
         $API = "Osen\\Mpesa\\{$api}";
         return $API::init($config);
@@ -13,56 +13,56 @@ if (!function_exists('mpesa_setup_mpesa')) {
 }
 
 if (!function_exists('mpesa_setup_stk')) {
-    function mpesa_setup_stk(array $config = [])
+    function mpesa_setup_stk($config = [])
     {
         return Osen\Mpesa\STK::init($config);
     }
 }
 
 if (!function_exists('mpesa_setup_c2b')) {
-    function mpesa_setup_c2b(array $config = [])
+    function mpesa_setup_c2b($config = [])
     {
         return Osen\Mpesa\C2B::init($config);
     }
 }
 
 if (!function_exists('mpesa_setup_b2c')) {
-    function mpesa_setup_b2c(array $config = [])
+    function mpesa_setup_b2c($config = [])
     {
         return Osen\Mpesa\B2C::init($config);
     }
 }
 
 if (!function_exists('mpesa_setup_b2b')) {
-    function mpesa_setup_b2b(array $config = [])
+    function mpesa_setup_b2b($config = [])
     {
         return Osen\Mpesa\B2B::init($config);
     }
 }
 
 if (!function_exists('mpesa_stk_push')) {
-    function mpesa_stk_push(string $phone, int $amount, string $reference)
+    function mpesa_stk_push($phone, $amount, $reference)
     {
         return Osen\Mpesa\STK::send($phone, $amount, $reference);
     }
 }
 
 if (!function_exists('mpesa_c2b_request')) {
-    function mpesa_c2b_request(string $phone, int $amount, string $reference)
+    function mpesa_c2b_request($phone, $amount, $reference)
     {
         return Osen\Mpesa\C2B::send($phone, $amount, $reference);
     }
 }
 
 if (!function_exists('mpesa_b2c_request')) {
-    function mpesa_b2c_request(string $phone, int $amount, string $reference)
+    function mpesa_b2c_request($phone, $amount, $reference)
     {
         return Osen\Mpesa\B2C::send($phone, $amount, $reference);
     }
 }
 
 if (!function_exists('mpesa_b2b_request')) {
-    function mpesa_b2b_request(string $phone, int $amount, string $reference)
+    function mpesa_b2b_request($phone, $amount, $reference)
     {
         return Osen\Mpesa\B2B::send($phone, $amount, $reference);
     }

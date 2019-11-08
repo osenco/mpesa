@@ -11,7 +11,7 @@ class Service
 
     public static function init($configs)
     {
-        $base = (isset($_SERVER['HTTPS']) ? 'https' : 'http' ). "://" . $_SERVER['SERVER_NAME'];
+        $base     = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . "://" . $_SERVER['SERVER_NAME'];
         $defaults = array(
             'env'              => 'sandbox',
             'type'             => 4,
@@ -22,11 +22,11 @@ class Service
             'username'         => 'apitest',
             'password'         => '',
             'passkey'          => 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
-            'validation_url'   => $base.'/lipwa/validate',
-            'confirmation_url' => $base.'/lipwa/confirm',
-            'callback_url'     => $base.'/lipwa/reconcile',
-            'timeout_url'      => $base.'/lipwa/timeout',
-            'result_url'      => $base.'/lipwa/results',
+            'validation_url'   => $base . '/lipwa/validate',
+            'confirmation_url' => $base . '/lipwa/confirm',
+            'callback_url'     => $base . '/lipwa/reconcile',
+            'timeout_url'      => $base . '/lipwa/timeout',
+            'result_url'       => $base . '/lipwa/results',
         );
 
         if (!empty($configs) && (!isset($configs['headoffice']) || empty($configs['headoffice']))) {
@@ -56,8 +56,13 @@ class Service
 
     public static function remote_post($endpoint, $data = array())
     {
-        $token = self::token();
-        $curl  = curl_init();
+        $token       = self::token();
+        $curl        = curl_init();
+        $data_string = json_encode($data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt(
             $curl,
@@ -67,11 +72,6 @@ class Service
                 'Authorization:Bearer ' . $token,
             )
         );
-        $data_string = json_encode($data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($curl, CURLOPT_HEADER, false);
 
         return curl_exec($curl);
     }

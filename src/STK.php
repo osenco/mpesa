@@ -40,7 +40,7 @@ class STK extends Service
             'TransactionDesc'   => $description,
             'Remark'            => $remark,
         );
-        
+
         $response = parent::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 

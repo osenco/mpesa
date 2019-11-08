@@ -20,7 +20,7 @@ Intuitive, Dynamic Mpesa PHP SDK
         </tr>
         <tr>
             <td>B2C - Business To Customer</td>
-            <td>Salary Payments, Disbursements, Reversals</td>
+            <td>Salary Payments, Disbursals, Reversals</td>
         </tr>
         <!-- <tr>
             <td>B2B - Business To Business</td>
@@ -296,7 +296,7 @@ STK::result(function ($response){
         </tr>
         <tr>
             <td>BusinessPayment</td>
-            <td>Used to send money from business to customer e.g. refunds</td>
+            <td>Used to send money from business to client e.g. refunds</td>
         </tr>
         <tr>
             <td>PromotionPayment</td>
@@ -308,7 +308,7 @@ STK::result(function ($response){
         </tr>
         <tr>
             <td>CustomerPayBillOnline</td>
-            <td>Used to simulate a transaction taking place in the case of C2B Simulate Transaction or to initiate a transaction on behalf of the customer (STK Push).</td>
+            <td>Used to simulate a transaction taking place in the case of C2B Simulate Transaction or to initiate a transaction on behalf of the client (STK Push).</td>
         </tr>
         <tr>
             <td>TransactionStatusQuery</td>
@@ -385,7 +385,7 @@ To simulate a c2b transaction, call the function as follows, passing the user's 
 mpesa_c2b_request($phone, $amount, $reference);
 ```
 
-To send funds to a customer
+To send funds to a client
 
 ```php
 mpesa_b2c_request();
