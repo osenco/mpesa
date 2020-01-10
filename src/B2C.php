@@ -44,7 +44,7 @@ class B2C extends Service
             'PartyB'             => $phone,
             'Remarks'            => $remarks,
             'QueueTimeOutURL'    => parent::$config->timeout_url,
-            'ResultURL'          => parent::$config->result_url,
+            'ResultURL'          => parent::$config->results_url,
             'Occasion'           => $occassion,
         );
 

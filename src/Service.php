@@ -26,7 +26,7 @@ class Service
             'confirmation_url' => $base . '/lipwa/confirm',
             'callback_url'     => $base . '/lipwa/reconcile',
             'timeout_url'      => $base . '/lipwa/timeout',
-            'result_url'       => $base . '/lipwa/results',
+            'results_url'       => $base . '/lipwa/results',
         );
 
         if (!empty($configs) && (!isset($configs['headoffice']) || empty($configs['headoffice']))) {
@@ -100,7 +100,7 @@ class Service
      *
      * @return array Result
      */
-    public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = 'Transaction Status Query', $callback = null)
+    public static function status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occasion = 'Transaction Status Query', $callback = null)
     {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
@@ -143,7 +143,7 @@ class Service
      *
      * @return array Result
      */
-    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = 'Transaction Reversal', $callback = null)
+    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occasion = 'Transaction Reversal', $callback = null)
     {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
@@ -163,7 +163,7 @@ class Service
             'TransactionID'          => $transaction,
             'Amount'                 => $amount,
             'ReceiverParty'          => $receiver,
-            'RecieverIdentifierType' => $reciever_type,
+            'RecieverIdentifierType' => $receiver_type,
             'ResultURL'              => self::$config->results_url,
             'QueueTimeOutURL'        => self::$config->timeout_url,
             'Remarks'                => $remarks,
