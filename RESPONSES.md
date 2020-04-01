@@ -43,19 +43,19 @@ This file includes instructions and sample code for processing callback data sen
 ```php
 function mpesa_stk_callback($response)
 {
-  $data                   = $response['Body']['stkCallback'];
+  $data                   = $response["Body"]["stkCallback"];
 
-  $MerchantRequestID      = $data['MerchantRequestID'];
-  $CheckoutRequestID      = $data['CheckoutRequestID'],
-  $ResultCode             = $data['ResultCode'],
-  $ResultDesc             = $data['ResultDesc'],
-  $CallbackMetadata       = $data['CallbackMetadata'];
+  $MerchantRequestID      = $data["MerchantRequestID"];
+  $CheckoutRequestID      = $data["CheckoutRequestID"],
+  $ResultCode             = $data["ResultCode"],
+  $ResultDesc             = $data["ResultDesc"],
+  $CallbackMetadata       = $data["CallbackMetadata"];
 
-  $Amount                 = $CallbackMetadata['Item'][0]['Value'];
-  $MpesaReceiptNumber     = $CallbackMetadata['Item'][1]['Value'];
-  $Balance                = $CallbackMetadata['Item'][2]['Value'];
-  $TransactionDate        = $CallbackMetadata['Item'][3]['Value'];
-  $PhoneNumber            = $CallbackMetadata['Item'][4]['Value'];
+  $Amount                 = $CallbackMetadata["Item"][0]["Value"];
+  $MpesaReceiptNumber     = $CallbackMetadata["Item"][1]["Value"];
+  $Balance                = $CallbackMetadata["Item"][2]["Value"];
+  $TransactionDate        = $CallbackMetadata["Item"][3]["Value"];
+  $PhoneNumber            = $CallbackMetadata["Item"][4]["Value"];
 
   // Do something with the variables above then return true or false
 
@@ -109,19 +109,19 @@ function mpesa_stk_callback($response)
 ```php
 function mpesa_c2b_callback($response)
 {
-  $data                   = $response['Body']['stkCallback'];
+  $data                   = $response["Body"]["stkCallback"];
 
-  $MerchantRequestID      = $data['MerchantRequestID'];
-  $CheckoutRequestID      = $data['CheckoutRequestID'],
-  $ResultCode             = $data['ResultCode'],
-  $ResultDesc             = $data['ResultDesc'],
-  $CallbackMetadata       = $data['CallbackMetadata'];
+  $MerchantRequestID      = $data["MerchantRequestID"];
+  $CheckoutRequestID      = $data["CheckoutRequestID"],
+  $ResultCode             = $data["ResultCode"],
+  $ResultDesc             = $data["ResultDesc"],
+  $CallbackMetadata       = $data["CallbackMetadata"];
 
-  $Amount                 = $CallbackMetadata['Item'][0]['Value'];
-  $MpesaReceiptNumber     = $CallbackMetadata['Item'][0]['Value'];
-  $Balance                = $CallbackMetadata['Item'][0]['Value'];
-  $TransactionDate        = $CallbackMetadata['Item'][0]['Value'];
-  $PhoneNumber            = $CallbackMetadata['Item'][0]['Value'];
+  $Amount                 = $CallbackMetadata["Item"][0]["Value"];
+  $MpesaReceiptNumber     = $CallbackMetadata["Item"][0]["Value"];
+  $Balance                = $CallbackMetadata["Item"][0]["Value"];
+  $TransactionDate        = $CallbackMetadata["Item"][0]["Value"];
+  $PhoneNumber            = $CallbackMetadata["Item"][0]["Value"];
 
   // Do something with the variables above then return true or false
 
@@ -193,25 +193,25 @@ function mpesa_c2b_callback($response)
 ```php
 function mpesa_b2c_callback($response)
 {
-  $data                                   = $response['Result'];
+  $data                                   = $response["Result"];
 
-  $ResultType                             = $data['ResultType'];
-  $ResultCode                             = $data['ResultCode'];
-  $ResultDesc                             = $data['ResultDesc'];
-  $OriginatorConversationID               = $data['OriginatorConversationID'];
-  $ConversationID                         = $data['ConversationID'];
-  $TransactionID                          = $data['TransactionID'];
-  $ResultParameters                       = $data['ResultParameters']['ResultParameter'];
-  $QueueTimeoutURL                        = $data['ReferenceData']['ReferenceItem'][0]['Value'];
+  $ResultType                             = $data["ResultType"];
+  $ResultCode                             = $data["ResultCode"];
+  $ResultDesc                             = $data["ResultDesc"];
+  $OriginatorConversationID               = $data["OriginatorConversationID"];
+  $ConversationID                         = $data["ConversationID"];
+  $TransactionID                          = $data["TransactionID"];
+  $ResultParameters                       = $data["ResultParameters"]["ResultParameter"];
+  $QueueTimeoutURL                        = $data["ReferenceData"]["ReferenceItem"][0]["Value"];
   
-  $TransactionReceipt                     = $ResultParameters[0]['Value'];
-  $TransactionAmount                      = $ResultParameters[1]['Value'];
-  $B2CWorkingAccountAvailableFunds        = $ResultParameters[2]['Value'];
-  $B2CUtilityAccountAvailableFunds        = $ResultParameters[3]['Value'];
-  $TransactionCompletedDateTime           = $ResultParameters[4]['Value'];
-  $ReceiverPartyPublicName                = $ResultParameters[5]['Value'];
-  $B2CChargesPaidAccountAvailableFunds    = $ResultParameters[6]['Value'];
-  $B2CRecipientIsRegisteredCustomer       = $ResultParameters[7]['Value'];
+  $TransactionReceipt                     = $ResultParameters[0]["Value"];
+  $TransactionAmount                      = $ResultParameters[1]["Value"];
+  $B2CWorkingAccountAvailableFunds        = $ResultParameters[2]["Value"];
+  $B2CUtilityAccountAvailableFunds        = $ResultParameters[3]["Value"];
+  $TransactionCompletedDateTime           = $ResultParameters[4]["Value"];
+  $ReceiverPartyPublicName                = $ResultParameters[5]["Value"];
+  $B2CChargesPaidAccountAvailableFunds    = $ResultParameters[6]["Value"];
+  $B2CRecipientIsRegisteredCustomer       = $ResultParameters[7]["Value"];
   
   // Do something with the variables above then return true or false
 
