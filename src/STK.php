@@ -19,6 +19,8 @@ class STK extends Service
     {
         $phone     = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
         $phone     = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
+        $phone = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
+        
         $timestamp = date("YmdHis");
         $password  = base64_encode(parent::$config->shortcode . parent::$config->passkey . $timestamp);
 

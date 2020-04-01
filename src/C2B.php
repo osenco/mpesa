@@ -34,6 +34,7 @@ class C2B extends Service
 
     /**
      * Simulates a C2B request
+     * 
      * @param $phone Receiving party phone
      * @param $amount Amount to transfer
      * @param $command Command ID
@@ -45,6 +46,7 @@ class C2B extends Service
     {
         $phone = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
         $phone = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
+        $phone = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
 
         $endpoint = (parent::$config->env == "live")
         ? "https://api.safaricom.co.ke/mpesa/c2b/v1/simulate"

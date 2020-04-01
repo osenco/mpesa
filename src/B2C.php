@@ -22,7 +22,9 @@ class B2C extends Service
         
         $phone    = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
         $phone    = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
+        $phone = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
         $phone = ($env == "live") ? $phone : "254708374149";
+        
         $endpoint = ($env == "live")
         ? "https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
         : "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
