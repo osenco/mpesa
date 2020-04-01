@@ -48,10 +48,10 @@ Install via composer by typing in your terminal
 composer require osenco/mpesa
 ```
 
-If you dont use composer you can just download this library from the releases, unzip it in your project and include the [autoload.php](autoload.php) file in your project.
+If you do not use composer you can just download this library from the releases, unzip it in your project and include the [autoload.php](autoload.php) file in your project.
 
 ```php
-require_once('path/to/autoload.php');
+require_once("path/to/autoload.php");
 ```
 
 For Laravel Users, there is a detailed guide [here](LARAVEL.md) as well as a sample [controller](examples/MpesaController.php)
@@ -70,19 +70,19 @@ The class uses static methods and does not need to be instantiated. This is to p
 ```php
 STK::init(
     array(
-        'env'               => 'sandbox',
-        'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
-        'shortcode'         => '174379',
-        'headoffice'        => '174379', // Ignore if using Paybill
-        'key'               => 'Your Consumer Key',
-        'secret'            => 'Your Consumer Secret',
-        'username'          => '', // Required for B2B and B2C APIs only
-        'password'          => '', // Required for B2B and B2C APIs only
-        'passkey'           => 'Your Online Passkey',
-        'validation_url'    => url('mpesa/validate'),
-        'confirmation_url'  => url('mpesa/confirm'),
-        'callback_url'      => url('mpesa/reconcile'),
-        'results_url'       => url('mpesa/results'),
+        "env"               => "sandbox",
+        "type"              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
+        "shortcode"         => "174379",
+        "headoffice"        => "174379", // Ignore if using Paybill
+        "key"               => "Your Consumer Key",
+        "secret"            => "Your Consumer Secret",
+        "username"          => "", // Required for B2B and B2C APIs only
+        "password"          => "", // Required for B2B and B2C APIs only
+        "passkey"           => "Your Online Passkey",
+        "validation_url"    => url("mpesa/validate"),
+        "confirmation_url"  => url("mpesa/confirm"),
+        "callback_url"      => url("mpesa/reconcile"),
+        "results_url"       => url("mpesa/results"),
     )
 );
 ```
@@ -96,7 +96,7 @@ Wrap your request in a try catch to ensure proper error handling
 try {
     return $res = STK::send($phone, $amount, $reference);
 
-    // Do something with $res, like save to DB with the $res['MerchantRequestID'] as key.
+    // Do something with $res, like save to DB with the $res["MerchantRequestID"] as key.
 } catch (\Throwable $th) {
     return $th;
 }
@@ -110,21 +110,21 @@ STK::reconcile();
 
 ```php
 STK::reconcile(function ($response){
-    $response                   = $response['Body'];
-    $resultCode 			    = $response['stkCallback']['ResultCode'];
-    $resultDesc 			    = $response['stkCallback']['ResultDesc'];
-    $merchantRequestID 			= $response['stkCallback']['MerchantRequestID'];
+    $response                   = $response["Body"];
+    $resultCode 			    = $response["stkCallback"]["ResultCode"];
+    $resultDesc 			    = $response["stkCallback"]["ResultDesc"];
+    $merchantRequestID 			= $response["stkCallback"]["MerchantRequestID"];
     
-    if(isset($response['stkCallback']['CallbackMetadata'])){
-        $CallbackMetadata       = $response['stkCallback']['CallbackMetadata']['Item'];
+    if(isset($response["stkCallback"]["CallbackMetadata"])){
+        $CallbackMetadata       = $response["stkCallback"]["CallbackMetadata"]["Item"];
 
-        $amount                 = $CallbackMetadata[0]['Value'];
-        $mpesaReceiptNumber     = $CallbackMetadata[1]['Value'];
-        $balance                = $CallbackMetadata[2]['Value'];
-        $transactionDate        = $CallbackMetadata[3]['Value'];
-        $phone                  = $CallbackMetadata[4]['Value'];
+        $amount                 = $CallbackMetadata[0]["Value"];
+        $mpesaReceiptNumber     = $CallbackMetadata[1]["Value"];
+        $balance                = $CallbackMetadata[2]["Value"];
+        $transactionDate        = $CallbackMetadata[3]["Value"];
+        $phone                  = $CallbackMetadata[4]["Value"];
     
-        $payment->status        = 'Paid';
+        $payment->status        = "Paid";
         $payment->amount        = $amount;
         $payment->receipt       = $mpesaReceiptNumber;
     }
@@ -143,22 +143,22 @@ STK::timeout();
 This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
 
 ```php
-STK::timeout(function ($data){
-    // Process results
+STK::timeout(function ($response\ zs xy){
+    // Do something with $response
     return true;
 });
 ```
 
 ### Check Transaction Status
-You can check for the status of a transaction by calling the `status' method at your endpoint.
+You can check for the status of a transaction by calling the `status" method at your endpoint.
 ```php
-STK::status($transaction, $command = 'TransactionStatusQuery', $remarks = 'Transaction Status Query', $occassion = 'Transaction Status Query');
+STK::status($transaction, $command = "TransactionStatusQuery", $remarks = "Transaction Status Query", $occassion = "Transaction Status Query");
 ```
 
 You can pass an optional fifth argument that is a callback for processing the response from the request and returning true.
 ```php
 STK::status($transaction, $command, $remarks, $occassion, function ($response){
-
+    // Do something with $response
     return true;
 });
 ```
@@ -166,13 +166,13 @@ STK::status($transaction, $command, $remarks, $occassion, function ($response){
 ### Reverse Transaction
 To reverse a transaction, call the `reverse` method at your endpoint. 
 ```php
-STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = 'Transaction Reversal');
+STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = "Transaction Reversal", $occassion = "Transaction Reversal");
 ```
 
 You can pass an optional seventh argument that is a callback for processing the response from the request and returning true.
 ```php
-STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'Transaction Reversal', $occassion = '', function ($response){
-
+STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = "Transaction Reversal", $occassion = "", function ($response){
+    // Do something with $response
     return true;
 });
 ```
@@ -180,12 +180,12 @@ STK::reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = 'T
 ### Check Account Balance
 To reverse a transaction, call the `reverse` method at your endpoint. 
 ```php
-STK::balance($command, $remarks = 'Balance Query', $occassion = '');
+STK::balance($command, $remarks = "Balance Query", $occassion = "");
 ```
 
-You can pass an optional fourth argument that is a callback for processing the response from the request and returning true.
+You can pass an optional callback for processing the response from the request and returning true.
 ```php
-STK::balance($command, $remarks = 'Balance Query', $occassion = '', function ($response){
+STK::balance($command, $remarks = "Balance Query", function ($response){
     // Do something with $response
     return true;
 });
@@ -202,74 +202,74 @@ You can pass an optional callback for processing the response from the request a
 ```php
 STK::result(function ($response){
     // Process account balance check results
-    $result                     = $response['Result'];
-    $ResultType                 = $result['ResultType'];
-	$ResultCode                 = $result['ResultCode'];
-	$ResultDesc                 = $result['ResultDesc'];
-	$OriginatorConversationID   = $result['OriginatorConversationID'];
-	$ConversationID             = $result['ConversationID'];
-	$TransactionID              = $result['TransactionID'];
-	$ResultParameters           = $result['ResultParameters'];
+    $result                     = $response["Result"];
+    $ResultType                 = $result["ResultType"];
+	$ResultCode                 = $result["ResultCode"];
+	$ResultDesc                 = $result["ResultDesc"];
+	$OriginatorConversationID   = $result["OriginatorConversationID"];
+	$ConversationID             = $result["ConversationID"];
+	$TransactionID              = $result["TransactionID"];
+	$ResultParameters           = $result["ResultParameters"];
 	
-    $ResultParameter            = $ResultParameters['ResultParameter'];
-	$ReceiptNo                  = $ResultParameter[0]['Value'];
-	$Conversation               = $ResultParameter[1]['Value'];
-	$FinalisedTime              = $ResultParameter[2]['Value'];
-	$Amount                     = $ResultParameter[3]['Value'];
-	$TransactionStatus          = $ResultParameter[4]['Value'];
-	$ReasonType                 = $ResultParameter[5]['Value'];
-    $TransactionReason          = $ResultParameter[6]['Value'];
-    $DebitPartyCharges          = $ResultParameter[7]['Value'];
-    $DebitAccountType           = $ResultParameter[8]['Value'];
-    $InitiatedTime              = $ResultParameter[9]['Value'];
-    $OriginatorConversationID   = $ResultParameter[10]['Value'];
-    $CreditPartyName            = $ResultParameter[11]['Value'];
-    $DebitPartyName             = $ResultParameter[12]['Value'];
+    $ResultParameter            = $ResultParameters["ResultParameter"];
+	$ReceiptNo                  = $ResultParameter[0]["Value"];
+	$Conversation               = $ResultParameter[1]["Value"];
+	$FinalisedTime              = $ResultParameter[2]["Value"];
+	$Amount                     = $ResultParameter[3]["Value"];
+	$TransactionStatus          = $ResultParameter[4]["Value"];
+	$ReasonType                 = $ResultParameter[5]["Value"];
+    $TransactionReason          = $ResultParameter[6]["Value"];
+    $DebitPartyCharges          = $ResultParameter[7]["Value"];
+    $DebitAccountType           = $ResultParameter[8]["Value"];
+    $InitiatedTime              = $ResultParameter[9]["Value"];
+    $OriginatorConversationID   = $ResultParameter[10]["Value"];
+    $CreditPartyName            = $ResultParameter[11]["Value"];
+    $DebitPartyName             = $ResultParameter[12]["Value"];
     
-    $ReferenceData              = $result['ReferenceData'];
-    $ReferenceItem              = $ReferenceData['ReferenceItem'];
-	$Occasion                   = $ReferenceItem['Value'];
+    $ReferenceData              = $result["ReferenceData"];
+    $ReferenceItem              = $ReferenceData["ReferenceItem"];
+	$Occasion                   = $ReferenceItem["Value"];
 
 
     // Process transaction reversal results
-    $Result                     = $response['Result'];
-	$ResultType                 = $Result['ResultType'];
-	$ResultCode                 = $Result['ResultCode'];
-	$ResultDesc                 = $Result['ResultDesc'];
-	$OriginatorConversationID   = $Result['OriginatorConversationID'];
-	$ConversationID             = $Result['ConversationID'];
-	$TransactionID              = $Result['TransactionID'];
-	$ReferenceData              = $Result['ReferenceData'];
-	$ReferenceItem              = $Result['ReferenceItem'];
-	$QueueTimeoutURL            = $ReferenceItem['Value'];
+    $Result                     = $response["Result"];
+	$ResultType                 = $Result["ResultType"];
+	$ResultCode                 = $Result["ResultCode"];
+	$ResultDesc                 = $Result["ResultDesc"];
+	$OriginatorConversationID   = $Result["OriginatorConversationID"];
+	$ConversationID             = $Result["ConversationID"];
+	$TransactionID              = $Result["TransactionID"];
+	$ReferenceData              = $Result["ReferenceData"];
+	$ReferenceItem              = $Result["ReferenceItem"];
+	$QueueTimeoutURL            = $ReferenceItem["Value"];
 
     // Process transaction status check results
-    $Result                     = $response['Result'];
-	$ResultType                 = $Result['ResultType'];
-	$ResultCode                 = $Result['ResultCode'];
-	$ResultDesc                 = $Result['ResultDesc'];
-	$OriginatorConversationID   = $Result['OriginatorConversationID'];
-	$ConversationID             = $Result['ConversationID'];
-	$TransactionID              = $Result['TransactionID'];
-	$ResultParameters           = $Result['ResultParameters'];
-	$ResultParameter            = $ResultParameters['ResultParameter'];
-	$ReceiptNo                  = $ResultParameter[0]['Value'];
-	$ConversationID             = $ResultParameter[1]['Value'];
-	$FinalisedTime              = $ResultParameter[2]['Value'];
-	$Amount                     = $ResultParameter[3]['Value'];
-	$TransactionStatus          = $ResultParameter[4]['Value'];
-	$ReasonType                 = $ResultParameter[5]['Value'];
-	$TransactionReason          = $ResultParameter[6]['Value'];
-	$DebitPartyCharges          = $ResultParameter[7]['Value'];
-	$DebitAccountType           = $ResultParameter[8]['Value'];
-	$InitiatedTime              = $ResultParameter[9]['Value'];
-	$OriginatorConversationID   = $ResultParameter[10]['Value'];
-	$CreditPartyName            = $ResultParameter[11]['Value'];
-	$DebitPartyName             = $ResultParameter[12]['Value'];
+    $Result                     = $response["Result"];
+	$ResultType                 = $Result["ResultType"];
+	$ResultCode                 = $Result["ResultCode"];
+	$ResultDesc                 = $Result["ResultDesc"];
+	$OriginatorConversationID   = $Result["OriginatorConversationID"];
+	$ConversationID             = $Result["ConversationID"];
+	$TransactionID              = $Result["TransactionID"];
+	$ResultParameters           = $Result["ResultParameters"];
+	$ResultParameter            = $ResultParameters["ResultParameter"];
+	$ReceiptNo                  = $ResultParameter[0]["Value"];
+	$ConversationID             = $ResultParameter[1]["Value"];
+	$FinalisedTime              = $ResultParameter[2]["Value"];
+	$Amount                     = $ResultParameter[3]["Value"];
+	$TransactionStatus          = $ResultParameter[4]["Value"];
+	$ReasonType                 = $ResultParameter[5]["Value"];
+	$TransactionReason          = $ResultParameter[6]["Value"];
+	$DebitPartyCharges          = $ResultParameter[7]["Value"];
+	$DebitAccountType           = $ResultParameter[8]["Value"];
+	$InitiatedTime              = $ResultParameter[9]["Value"];
+	$OriginatorConversationID   = $ResultParameter[10]["Value"];
+	$CreditPartyName            = $ResultParameter[11]["Value"];
+	$DebitPartyName             = $ResultParameter[12]["Value"];
 
-    $ReferenceData              = $result['ReferenceData'];
-    $ReferenceItem              = $ReferenceData['ReferenceItem'];
-	$Occasion                   = $ReferenceItem['Value'];
+    $ReferenceData              = $result["ReferenceData"];
+    $ReferenceItem              = $ReferenceData["ReferenceItem"];
+	$Occasion                   = $ReferenceItem["Value"];
 
 
     //TIP: You can differentiate between responses by checking value of $ResultType
@@ -348,20 +348,20 @@ To configure the class, use the `mpesa_setup_config` function , passing your con
 
 ```php
 $config = array(
-    'env'               => 'sandbox',
-    'type'              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
-    'shortcode'         => '174379',
-    'headoffice'          => '174379',
-    'key'               => 'Your Consumer Key',
-    'secret'            => 'Your Consumer Secret',
-    'username'          => '',
-    'passkey'           => 'Your Online Passkey',
-    'validation_url'    => url('mpesa/validate'),
-    'confirmation_url'  => url('mpesa/confirm'),
-    'callback_url'      => url('mpesa/reconcile'),
-    'results_url'       => url('mpesa/results'),
+    "env"               => "sandbox",
+    "type"              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
+    "shortcode"         => "174379",
+    "headoffice"          => "174379",
+    "key"               => "Your Consumer Key",
+    "secret"            => "Your Consumer Secret",
+    "username"          => "",
+    "passkey"           => "Your Online Passkey",
+    "validation_url"    => url("mpesa/validate"),
+    "confirmation_url"  => url("mpesa/confirm"),
+    "callback_url"      => url("mpesa/reconcile"),
+    "results_url"       => url("mpesa/results"),
 );
-mpesa_setup_config($config, 'STK');
+mpesa_setup_config($config, "STK");
 ```
 
 Optionally, you could configure with the `mpesa_setup_*` function s
@@ -373,13 +373,13 @@ mpesa_setup_b2c($config);
 mpesa_setup_b2b($config);
 ```
 
-To make a STK Prompt request, pass the user's phone number, the amount due, and an optional reference(shows up on the user's phone) respectively
+To make a STK Prompt request, pass the user"s phone number, the amount due, and an optional reference(shows up on the user"s phone) respectively
 
 ```php
 mpesa_stk_push($phone, $amount, $reference);
 ```
 
-To simulate a c2b transaction, call the function as follows, passing the user's phone number, the amount due, and an optional reference respectively
+To simulate a c2b transaction, call the function as follows, passing the user"s phone number, the amount due, and an optional reference respectively
 
 ```php
 mpesa_c2b_request($phone, $amount, $reference);

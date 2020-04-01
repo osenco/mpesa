@@ -16,36 +16,36 @@ class B2C extends Service
      *
      * @return array
      */
-    public static function send($phone, $amount = 10, $command = 'BusinessPayment', $remarks = '', $occassion = '', $callback = null)
+    public static function send($phone, $amount = 10, $command = "BusinessPayment", $remarks = "", $occassion = "", $callback = null)
     {
         $env       = parent::$config->env;
         
-        $phone    = (substr($phone, 0, 1) == '+') ? str_replace('+', '', $phone) : $phone;
-        $phone    = (substr($phone, 0, 1) == '0') ? preg_replace('/^0/', '254', $phone) : $phone;
-        $phone = ($env == 'live') ? $phone : '254708374149';
-        $endpoint = ($env == 'live')
-        ? 'https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest'
-        : 'https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest';
+        $phone    = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
+        $phone    = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
+        $phone = ($env == "live") ? $phone : "254708374149";
+        $endpoint = ($env == "live")
+        ? "https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
+        : "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
 
-        $timestamp = date('YmdHis');
+        $timestamp = date("YmdHis");
         $plaintext = parent::$config->password;
-        $publicKey = file_get_contents(__DIR__ . '/certs/' . $env . '/cert.cer');
+        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cr");
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
-        $password = ($env == 'live') ? $password : 'Safaricom568!#';
+        $password = ($env == "live") ? $password : "Safaricom568!#";
 
         $curl_post_data = array(
-            'InitiatorName'      => parent::$config->username,
-            'SecurityCredential' => $password,
-            'CommandID'          => $command,
-            'Amount'             => round($amount),
-            'PartyA'             => parent::$config->shortcode,
-            'PartyB'             => $phone,
-            'Remarks'            => $remarks,
-            'QueueTimeOutURL'    => parent::$config->timeout_url,
-            'ResultURL'          => parent::$config->results_url,
-            'Occasion'           => $occassion,
+            "InitiatorName"      => parent::$config->username,
+            "SecurityCredential" => $password,
+            "CommandID"          => $command,
+            "Amount"             => round($amount),
+            "PartyA"             => parent::$config->shortcode,
+            "PartyB"             => $phone,
+            "Remarks"            => $remarks,
+            "QueueTimeOutURL"    => parent::$config->timeout_url,
+            "ResultURL"          => parent::$config->results_url,
+            "Occasion"           => $occassion,
         );
 
         $response = parent::remote_post($endpoint, $curl_post_data);

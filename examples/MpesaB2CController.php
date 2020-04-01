@@ -17,17 +17,17 @@ class MpesaController extends Controller
     {
         B2C::init(
             array(
-                'env'              => 'sandbox',
-                'shortcode'        => '173527',
-                'headoffice'       => '173527',
-                'key'              => 'Your Consumer Key',
-                'secret'           => 'Your Consumer Secret',
-                'username'         => 'Your Org Username',
-                'password'         => 'Your Org Password',
-                'validation_url'   => url('disburse/validate'),
-                'confirmation_url' => url('disburse/confirm'),
-                'callback_url'     => url('disburse/reconcile'),
-                'results_url'      => url('disburse/timeout'),
+                "env"              => "sandbox",
+                "shortcode"        => "173527",
+                "headoffice"       => "173527",
+                "key"              => "Your Consumer Key",
+                "secret"           => "Your Consumer Secret",
+                "username"         => "Your Org Username",
+                "password"         => "Your Org Password",
+                "validation_url"   => url("disburse/validate"),
+                "confirmation_url" => url("disburse/confirm"),
+                "callback_url"     => url("disburse/reconcile"),
+                "results_url"      => url("disburse/timeout"),
             )
         );
     }
@@ -50,7 +50,7 @@ class MpesaController extends Controller
                 $ResponseDescription      = $response["ResponseDescription"];
 
                 // TIP: Save $OriginatorConversationID in the database, and use it as a key for update
-                $data['request_id'] = $OriginatorConversationID;
+                $data["request_id"] = $OriginatorConversationID;
                 $payment            = Payment::create($data);
 
                 return true;
@@ -58,7 +58,7 @@ class MpesaController extends Controller
 
             return back();
         } catch (\Exception $e) {
-            return array('msg' => $e->getMessage);
+            return array("msg" => $e->getMessage);
         }
     }
 
@@ -87,7 +87,7 @@ class MpesaController extends Controller
             $QueueTimeoutURL                     = $ReferenceItem[0]["Value"];
 
             // Update Database record with $TransactionID as the MPESA receipt number where $OriginatorConversationID
-            $payment          = Payment::where('request_id', $OriginatorConversationID)->first();
+            $payment          = Payment::where("request_id", $OriginatorConversationID)->first();
             $payment->receipt = $TransactionID;
             $payment->save();
 

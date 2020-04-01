@@ -5,9 +5,9 @@
  * @param class $class Full namespaced class e.g Osen\Mpesa\STK
  */
 spl_autoload_register(function ($class) {
-    if (strpos($class, 'Osen\Mpesa')) {
-        $class = str_replace('Osen\Mpesa', '', $class);
-        $path  = str_replace('\\', '/', $class);
+    if (strpos($class, "Osen\Mpesa")) {
+        $class = str_replace("Osen\Mpesa", "", $class);
+        $path  = str_replace("\\", "/", $class);
 
         require_once "src/{$path}.php";
     }
@@ -16,4 +16,4 @@ spl_autoload_register(function ($class) {
 /**
  * Load helper functions for more concise code
  */
-require_once 'src/helpers.php';
+require_once "src/helpers.php";
