@@ -143,7 +143,7 @@ STK::timeout();
 This function takes the data sent by Safaricom, and returns a response. You can pass an optional argument to process the data and return true.
 
 ```php
-STK::timeout(function ($response\ zs xy){
+STK::timeout(function ($response){
     // Do something with $response
     return true;
 });
