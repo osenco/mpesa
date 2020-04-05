@@ -11,7 +11,7 @@ class Service
 
     public static function init($configs)
     {
-        $base     = (isset($_SERVER["HTTPS"]) ? "https" : "http") . "://" . $_SERVER["SERVER_NAME"];
+        $base     = (isset($_SERVER["HTTPS"]) ? "https" : "http") . "://" . (isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '');
         $defaults = array(
             "env"              => "sandbox",
             "type"             => 4,

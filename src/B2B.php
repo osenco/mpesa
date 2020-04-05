@@ -17,7 +17,15 @@ class B2B extends Service
      *
      * @return array
      */
-    public static function send($receiver, $receiver_type, $amount = 10, $command = "", $reference = "TRX", $remarks = "", $callback = null)
+    public static function send(
+        $receiver, 
+        $receiver_type, 
+        $amount = 10, 
+        $command = "", 
+        $reference = "TRX", 
+        $remarks = "", 
+        $callback = null
+        )
     {
         $token = parent::token();
 

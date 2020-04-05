@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Payment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Osen\Mpesa\STK;
 use Osen\Mpesa\C2B;
 
