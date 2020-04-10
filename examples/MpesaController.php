@@ -16,6 +16,18 @@ class MpesaController extends Controller
      */
     public function __construct()
     {
+        C2B::init(
+            array(
+                "env"              => "sandbox",
+                "type"             => 4,
+                "shortcode"        => "174379",
+                "key"              => "Your Consumer Key",
+                "secret"           => "Your Consumer Secret",
+                "validation_url"   => url("lipwa/validate"),
+                "confirmation_url" => url("lipwa/confirm"),
+                "timeout_url"      => url("lipwa/timeout"),
+            )
+        );
 
         STK::init(
             array(
@@ -29,19 +41,6 @@ class MpesaController extends Controller
                 "validation_url" => url("lipwa/validate"),
                 "callback_url"   => url("lipwa/reconcile"),
                 "timeout_url"    => url("lipwa/timeout"),
-            )
-        );
-
-        C2B::init(
-            array(
-                "env"              => "sandbox",
-                "type"             => 4,
-                "shortcode"        => "174379",
-                "key"              => "Your Consumer Key",
-                "secret"           => "Your Consumer Secret",
-                "validation_url"   => url("lipwa/validate"),
-                "confirmation_url" => url("lipwa/confirm"),
-                "timeout_url"      => url("lipwa/timeout"),
             )
         );
     }
