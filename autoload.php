@@ -16,6 +16,6 @@ spl_autoload_register(
 );
 
 /**
- * Load helper functions for more concise code
+ * Load helper functions for more concise functional code
  */
 require_once "src/helpers.php";

@@ -123,6 +123,10 @@ STK::reconcile(function ($response){
         $balance                = $CallbackMetadata[2]["Value"];
         $transactionDate        = $CallbackMetadata[3]["Value"];
         $phone                  = $CallbackMetadata[4]["Value"];
+    
+        $payment->status        = "Paid";
+        $payment->amount        = $amount;
+        $payment->receipt       = $mpesaReceiptNumber;
     }
 
     return true;
@@ -148,12 +152,7 @@ STK::timeout(function ($response){
 ### Check Transaction Status
 You can check for the status of a transaction by calling the `status" method at your endpoint.
 ```php
-STK::status(
-    $transaction, 
-    $command = "TransactionStatusQuery", 
-    $remarks = "Transaction Status Query", 
-    $occassion = "Transaction Status Query"
-);
+STK::status($transaction, $command = "TransactionStatusQuery", $remarks = "Transaction Status Query", $occassion = "Transaction Status Query");
 ```
 
 You can pass an optional fifth argument that is a callback for processing the response from the request and returning true.
@@ -191,6 +190,7 @@ STK::balance($command, $remarks = "Balance Query", function ($response){
     return true;
 });
 ```
+
 
 ### Processing Results
 To process results from a transaction statuscheck, or a reversal, or an account balance check, call the `result` method at your endpoint. 

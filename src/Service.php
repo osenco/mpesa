@@ -82,8 +82,8 @@ class Service
     public static function token()
     {
         $endpoint = (self::$config->env == "live")
-        ? "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-        : "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
+            ? "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+            : "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
 
         $credentials = base64_encode(self::$config->key . ":" . self::$config->secret);
         $response    = self::remote_get($endpoint, $credentials);
@@ -104,14 +104,14 @@ class Service
     {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
-        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cr");
+        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-        ? "https://api.safaricom.co.ke/lipwa/transactionstatus/v1/query"
-        : "https://sandbox.safaricom.co.ke/lipwa/transactionstatus/v1/query";
+            ? "https://api.safaricom.co.ke/lipwa/transactionstatus/v1/query"
+            : "https://sandbox.safaricom.co.ke/lipwa/transactionstatus/v1/query";
 
         $curl_post_data = array(
             "Initiator"          => self::$config->username,
@@ -129,8 +129,8 @@ class Service
         $result   = json_decode($response, true);
 
         return is_null($callback)
-        ? $result
-        : \call_user_func_array($callback, array($result));
+            ? $result
+            : \call_user_func_array($callback, array($result));
     }
 
     /**
@@ -147,14 +147,14 @@ class Service
     {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
-        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cr");
+        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-        ? "https://api.safaricom.co.ke/lipwa/reversal/v1/request"
-        : "https://sandbox.safaricom.co.ke/lipwa/reversal/v1/request";
+            ? "https://api.safaricom.co.ke/lipwa/reversal/v1/request"
+            : "https://sandbox.safaricom.co.ke/lipwa/reversal/v1/request";
 
         $curl_post_data = array(
             "CommandID"              => "TransactionReversal",
@@ -174,8 +174,8 @@ class Service
         $result   = json_decode($response, true);
 
         return is_null($callback)
-        ? $result
-        : \call_user_func_array($callback, array($result));
+            ? $result
+            : \call_user_func_array($callback, array($result));
     }
 
     /**
@@ -189,14 +189,14 @@ class Service
     {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
-        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cr");
+        $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-        ? "https://api.safaricom.co.ke/lipwa/accountbalance/v1/query"
-        : "https://sandbox.safaricom.co.ke/lipwa/accountbalance/v1/query";
+            ? "https://api.safaricom.co.ke/lipwa/accountbalance/v1/query"
+            : "https://sandbox.safaricom.co.ke/lipwa/accountbalance/v1/query";
 
         $curl_post_data = array(
             "CommandID"          => $command,
@@ -213,8 +213,8 @@ class Service
         $result   = json_decode($response, true);
 
         return is_null($callback)
-        ? $result
-        : \call_user_func_array($callback, array($result));
+            ? $result
+            : \call_user_func_array($callback, array($result));
     }
 
     /**
@@ -230,8 +230,8 @@ class Service
             return array("ResultCode" => 0, "ResultDesc" => "Success");
         } else {
             return call_user_func_array($callback, array($data))
-            ? array("ResultCode" => 0, "ResultDesc" => "Success")
-            : array("ResultCode" => 1, "ResultDesc" => "Failed");
+                ? array("ResultCode" => 0, "ResultDesc" => "Success")
+                : array("ResultCode" => 1, "ResultDesc" => "Failed");
         }
     }
 
@@ -248,8 +248,8 @@ class Service
             return array("ResultCode" => 0, "ResultDesc" => "Success");
         } else {
             return call_user_func_array($callback, array($data))
-            ? array("ResultCode" => 0, "ResultDesc" => "Success")
-            : array("ResultCode" => 1, "ResultDesc" => "Failed");
+                ? array("ResultCode" => 0, "ResultDesc" => "Success")
+                : array("ResultCode" => 1, "ResultDesc" => "Failed");
         }
     }
 
@@ -266,8 +266,8 @@ class Service
             return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
         } else {
             return call_user_func_array($callback, array($response))
-            ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-            : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
+                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
         }
     }
 
@@ -284,8 +284,8 @@ class Service
             return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
         } else {
             return call_user_func_array($callback, array($response))
-            ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-            : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
+                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
         }
     }
 
@@ -302,8 +302,8 @@ class Service
             return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
         } else {
             return call_user_func_array($callback, array($response))
-            ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-            : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
+                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
         }
     }
 }
