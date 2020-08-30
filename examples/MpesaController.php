@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Payment;
 use Illuminate\Http\Request;
-use Osen\Mpesa\STK;
 use Osen\Mpesa\C2B;
 
 class MpesaController extends Controller
@@ -17,19 +16,6 @@ class MpesaController extends Controller
     public function __construct()
     {
         C2B::init(
-            array(
-                "env"              => "sandbox",
-                "type"             => 4,
-                "shortcode"        => "174379",
-                "key"              => "Your Consumer Key",
-                "secret"           => "Your Consumer Secret",
-                "validation_url"   => url("lipwa/validate"),
-                "confirmation_url" => url("lipwa/confirm"),
-                "timeout_url"      => url("lipwa/timeout"),
-            )
-        );
-
-        STK::init(
             array(
                 "env"            => "sandbox",
                 "type"           => 4,
@@ -56,7 +42,7 @@ class MpesaController extends Controller
         $data = $request->all();
 
         try {
-            $res = STK($request->phone, $request->amount, $request->reference);
+            $res = C2B($request->phone, $request->amount, $request->reference);
 
             if (!isset($res["errorCode"])) {
                 $data["ref"] = $res->MerchantRequestID;
@@ -79,7 +65,7 @@ class MpesaController extends Controller
     public function reconcile(Request $request, $method = "mpesa")
     {
         if ($method == "mpesa") {
-            $response = STK::reconcile(function ($data) {
+            $response = C2B::reconcile(function ($data) {
                 $payment         = Payment::where("mpesa", $data["MerchantRequestID"])->first();
                 $payment->status = "Paid";
 
@@ -90,7 +76,7 @@ class MpesaController extends Controller
 
     public function validation()
     {
-        return STK::validate();
+        return C2B::validate();
     }
 
     public function confirmation()
@@ -117,11 +103,11 @@ class MpesaController extends Controller
 
     public function results()
     {
-        return STK::results();
+        return C2B::results();
     }
 
     public function timeout()
     {
-        return STK::timeout();
+        return C2B::timeout();
     }
 }

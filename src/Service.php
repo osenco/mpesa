@@ -227,11 +227,20 @@ class Service
         $data = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array("ResultCode" => 0, "ResultDesc" => "Success");
+            return array(
+                "ResultCode" => 0,
+                "ResultDesc" => "Success"
+            );
         } else {
             return call_user_func_array($callback, array($data))
-                ? array("ResultCode" => 0, "ResultDesc" => "Success")
-                : array("ResultCode" => 1, "ResultDesc" => "Failed");
+                ? array(
+                    "ResultCode" => 0,
+                    "ResultDesc" => "Success"
+                )
+                : array(
+                    "ResultCode" => 1,
+                    "ResultDesc" => "Failed"
+                );
         }
     }
 
@@ -245,11 +254,20 @@ class Service
         $data = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array("ResultCode" => 0, "ResultDesc" => "Success");
+            return array(
+                "ResultCode" => 0,
+                "ResultDesc" => "Success"
+            );
         } else {
             return call_user_func_array($callback, array($data))
-                ? array("ResultCode" => 0, "ResultDesc" => "Success")
-                : array("ResultCode" => 1, "ResultDesc" => "Failed");
+                ? array(
+                    "ResultCode" => 0,
+                    "ResultDesc" => "Success"
+                )
+                : array(
+                    "ResultCode" => 1,
+                    "ResultDesc" => "Failed"
+                );
         }
     }
 
@@ -263,11 +281,20 @@ class Service
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
+            return array(
+                "ResultCode" => 0,
+                "ResultDesc" => "Service request successful"
+            );
         } else {
             return call_user_func_array($callback, array($response))
-                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array(
+                    "ResultCode" => 0,
+                    "ResultDesc" => "Service request successful"
+                )
+                : array(
+                    "ResultCode" => 1,
+                    "ResultDesc" => "Service request failed"
+                );
         }
     }
 
@@ -281,11 +308,20 @@ class Service
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
+            return array(
+                "ResultCode" => 0,
+                "ResultDesc" => "Service request successful"
+            );
         } else {
             return call_user_func_array($callback, array($response))
-                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array(
+                    "ResultCode" => 0,
+                    "ResultDesc" => "Service request successful"
+                )
+                : array(
+                    "ResultCode" => 1,
+                    "ResultDesc" => "Service request failed"
+                );
         }
     }
 
@@ -299,11 +335,20 @@ class Service
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array("ResultCode" => 0, "ResultDesc" => "Service request successful");
+            return array(
+                "ResultCode" => 0,
+                "ResultDesc" => "Service request successful"
+            );
         } else {
             return call_user_func_array($callback, array($response))
-                ? array("ResultCode" => 0, "ResultDesc" => "Service request successful")
-                : array("ResultCode" => 1, "ResultDesc" => "Service request failed");
+                ? array(
+                    "ResultCode" => 0,
+                    "ResultDesc" => "Service request successful"
+                )
+                : array(
+                    "ResultCode" => 1,
+                    "ResultDesc" => "Service request failed"
+                );
         }
     }
 }

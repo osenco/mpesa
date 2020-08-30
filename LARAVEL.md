@@ -9,17 +9,17 @@ php artisan make:controller MpesaController
 or create a file called `MpesaController.php` in the `app/Http/Controllers` and copy the contents of the [sample controller](examples/MpesaController.php) into the newl created file.
 
 ### Import Class With Namespace
-Put this code at the top of the controller to make the M-PESA class available for use.
+Put this code at the top of the controller (in the class imports) to make the M-PESA class available for use.
 
 ```php
-use Osen\Mpesa\STK;
+use Osen\Mpesa\C2B;
 ```
 
 ### Instantiating The Class
 In your controller"s constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 
 
 ```php
-STK::init(
+C2B::init(
   array(
     "env"               => "sandbox",
     "type"              => 4,

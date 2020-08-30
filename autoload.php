@@ -2,7 +2,7 @@
 
 /**
  * Register autoloader for classes under the Osen namespace
- * @param class $class Full namespaced class e.g Osen\Mpesa\STK
+ * @param class $class Full namespaced class e.g Osen\Mpesa\C2B
  */
 spl_autoload_register(
     function ($class) {

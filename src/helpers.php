@@ -5,7 +5,7 @@
  */
 
 if (!function_exists("mpesa_setup_mpesa")) {
-    function mpesa_setup_config($config = [], $api = "STK")
+    function mpesa_setup_config($config = [], $api = "C2B")
     {
         $API = "Osen\\Mpesa\\{$api}";
         return $API::init($config);
@@ -15,7 +15,7 @@ if (!function_exists("mpesa_setup_mpesa")) {
 if (!function_exists("mpesa_setup_stk")) {
     function mpesa_setup_stk($config = [])
     {
-        return Osen\Mpesa\STK::init($config);
+        return Osen\Mpesa\C2B::init($config);
     }
 }
 
@@ -43,14 +43,14 @@ if (!function_exists("mpesa_setup_b2b")) {
 if (!function_exists("mpesa_stk_push")) {
     function mpesa_stk_push($phone, $amount, $reference)
     {
-        return Osen\Mpesa\STK::send($phone, $amount, $reference);
+        return Osen\Mpesa\C2B::stk($phone, $amount, $reference);
     }
 }
 
 if (!function_exists("mpesa_c2b_request")) {
     function mpesa_c2b_request($phone, $amount, $reference)
     {
-        return Osen\Mpesa\C2B::send($phone, $amount, $reference);
+        return Osen\Mpesa\C2B::simulate($phone, $amount, $reference);
     }
 }
 

@@ -1,7 +1,7 @@
 # MPESA API Responses
 This file includes instructions and sample code for processing callback data sent from Safaricom. It includes sample responses from Safaricom and how to process them accordingly.
 
-## STK Response Data
+## C2B Response Data
 ### Sample Response
 ```json
 {
