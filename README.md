@@ -43,7 +43,7 @@ Intuitive, Dynamic Mpesa PHP SDK
 
 Install via composer by typing in your terminal
 
-```bash
+```cmd
 composer require osenco/mpesa
 ```
 
@@ -59,7 +59,13 @@ For Laravel Users, there is a detailed guide [here](LARAVEL.md) as well as a sam
 
 ### Import Class With Namespace
 
-Import the class namespace into your class or app to make it available for use. Replace C2B with your API of choice. We will be using C2B here. See how to set up [C2B here](C2B.md), [B2C here](B2C.md) and [B2B here](B2B.md).
+Import the class namespace into your class or app to make it available for use. Replace C2B with your API of choice. We will be using C2B here. 
+
+The C2B API enables Paybill and Buy Goods merchants to integrate to M-Pesa and receive real time payments notifications. A user pays through the traditional payment process (i.e goes to M-Pesa menu on their phone and makes the payment to your shortcode). The transaction details are then sent to your app.
+
+This could come in handy and work as a backup to STK push, should the prompt fail, either because the user has not enabled their SIM, or it timed out before they saw it. In this case you should display appropriate instructions for the user to make this payment, making sure to supply your shortcode, and account number (for Paybills).
+
+See how to set up [B2C here](B2C.md) and [B2B here](B2B.md).
 
 ```php
 use Osen\Mpesa\C2B;
@@ -68,10 +74,6 @@ use Osen\Mpesa\C2B;
 ### Instantiating The Classes
 
 The classes use static methods and does not need to be instantiated. This is to persist configuration in memory troughout execution of the script. To pass configuration options to the object, use the `init()` method at the top of your script. The `headoffice` key is only required for Till Numbers. Paybill users can ignore it.
-
-The C2B API enables Paybill and Buy Goods merchants to integrate to M-Pesa and receive real time payments notifications. A user pays through the traditional payment process (i.e goes to M-Pesa menu on their phone and makes the payment to your shortcode). The transaction details are then sent to your app.
-
-This could come in handy and work as a backup to C2B push, should the prompt fail, either because the user has not enabled their SIM, or it timed out before they saw it. In this case you should display appropriate instructions for the user to make this payment, making sure to supply your shortcode, and account number (for Paybills).
 
 ```php
 C2B::init(
