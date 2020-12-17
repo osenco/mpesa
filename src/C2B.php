@@ -18,7 +18,7 @@ class C2B extends Service
             : "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl";
 
         $curl_post_data = array(
-            "ShortCode"       => parent::$config->shortcode,
+            "ShortCode"       => parent::$config->headoffice,
             "ResponseType"    => $response_type,
             "ConfirmationURL" => parent::$config->confirmation_url,
             "ValidationURL"   => parent::$config->validation_url,
