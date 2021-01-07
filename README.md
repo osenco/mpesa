@@ -1,6 +1,6 @@
-# Mpesa PHP SDK
+# M-PESA PHP SDK
 
-Intuitive, Dynamic Mpesa PHP SDK
+Intuitive and Comprehensive M-PESA SDK for PHP Applications
 
 ## Supported APIs
 
@@ -87,10 +87,10 @@ C2B::init(
         "username"          => "", // Required for B2B and B2C APIs only
         "password"          => "", // Required for B2B and B2C APIs only
         "passkey"           => "Your Online Passkey",
-        "validation_url"    => "/mpesa/validate",
-        "confirmation_url"  => "/mpesa/confirm",
-        "callback_url"      => "/mpesa/reconcile",
-        "results_url"       => "/mpesa/results")
+        "validation_url"    => "lipwa/validate",
+        "confirmation_url"  => "lipwa/confirm",
+        "callback_url"      => "lipwa/reconcile",
+        "results_url"       => "lipwa/results")
     )
 );
 ```
@@ -100,10 +100,10 @@ C2B::init(
 ```php
 C2B::init(
     array(
-        "validation_url"    => "/mpesa/validate",
-        "confirmation_url"  => "/mpesa/confirm",
-        "callback_url"      => "/mpesa/reconcile",
-        "results_url"       => "/mpesa/results")
+        "validation_url"    => "lipwa/validate",
+        "confirmation_url"  => "lipwa/confirm",
+        "callback_url"      => "lipwa/reconcile",
+        "results_url"       => "lipwa/results")
     )
 );
 ```
@@ -122,9 +122,21 @@ try {
 }
 ```
 
+OR
+
+```php
+try {
+    return $res = STK::send($phone, $amount, $reference);
+
+    // Do something with $res, like save to DB with the $res["MerchantRequestID"] as key.
+} catch (\Throwable $th) {
+    return $th;
+}
+```
+
 ### Reconciling The Payment
 
-The Mpesa transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data. The callback function can either be a defined funtion or a closure(anonymous). If ommited, the method will return a successful response by default.
+The M-PESA transaction requests are asynchronous, and as such the payment details are not instantaneous. To get the transaction data and update the payment, use the `reconcile()` method. A callback function may be supplied to process the data. The callback function can either be a defined funtion or a closure(anonymous). If ommited, the method will return a successful response by default.
 
 ```php
 C2B::reconcile();
@@ -473,10 +485,10 @@ $config = array(
     "secret"            => "Your Consumer Secret",
     "username"          => "",
     "passkey"           => "Your Online Passkey",
-    "validation_url"    => "/mpesa/validate",
-    "confirmation_url"  => "/mpesa/confirm",
-    "callback_url"      => "/mpesa/reconcile",
-    "results_url"       => "/mpesa/results",
+    "validation_url"    => "lipwa/validate",
+    "confirmation_url"  => "lipwa/confirm",
+    "callback_url"      => "lipwa/reconcile",
+    "results_url"       => "lipwa/results",
 );
 mpesa_setup_config($config, "C2B");
 ```
@@ -523,7 +535,7 @@ mpesa_confirm()
 
 ## Credits & Acknowledgements
 
-Mpesa is a service and registered trademark of [Safaricom PLC](https://safaricom.co.ke).
+M-PESA is a service and registered trademark of [Safaricom PLC](https://safaricom.co.ke).
 
 ## Licensing
 

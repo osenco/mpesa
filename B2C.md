@@ -2,7 +2,7 @@
 
 ### Instantiating The Class
 
-Remember to add the Mpesa web portal username and password for a user with `B2C ORG API Initiator` role when setting up the class. 
+Remember to add the M-PESA web portal username and password for a user with `B2C ORG API Initiator` role when setting up the class. 
 
 ````php
 B2C::init(
@@ -15,8 +15,8 @@ B2C::init(
     'username'          => '',
     'password'          => '',
     'passkey'           => 'Your Online Passkey',
-    'results_url'       => url('mpesa/results'),
-    'timeout_url'       => url('mpesa/timeout'),
+    'results_url'       => url('tuma/results'),
+    'timeout_url'       => url('tuma/timeout'),
   )
 );
 ````
@@ -46,12 +46,12 @@ B2C::reconcile(function($response)
   $TransactionID                       = $Result["TransactionID"];
   $ResultParameters                    = $Result["ResultParameters"];
   $ResultParameter                     = $Result["ResultParameters"]["ResultParameter"];
-  $TransactionReceipt                  = $ResultParameter[0]["Value"];
-  $TransactionAmount                   = $ResultParameter[1]["Value"];
+  $TransactionAmount                   = $ResultParameter[0]["Value"];
+  $TransactionReceipt                  = $ResultParameter[1]["Value"];
   $B2CWorkingAccountAvailableFunds     = $ResultParameter[2]["Value"];
   $B2CUtilityAccountAvailableFunds     = $ResultParameter[3]["Value"];
   $TransactionCompletedDateTime        = $ResultParameter[4]["Value"];
-  $ReceiverPartyPublicName             = $ResultParameter[5]["Value"];
+  $ReceiverPartyPublicName             = $ResultParameter[2]["Value"];
   $B2CChargesPaidAccountAvailableFunds = $ResultParameter[6]["Value"];
   $B2CRecipientIsRegisteredCustomer    = $ResultParameter[7]["Value"];
   $ReferenceData                       = $Result["ReferenceData"];

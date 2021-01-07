@@ -16,30 +16,31 @@ class B2C extends Service
      *
      * @return array
      */
-    public static function send($phone, $amount = 10, $command = "BusinessPayment", $remarks = "", $occassion = "", $callback = null)
-    {
-        $env = parent::$config->env;
-
-        $phone    = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
-        $phone    = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
-        $phone    = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
-        $phone    = ($env == "live") ? $phone : "254708374149";
-
-        $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
-            : "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
-
-        $timestamp = date("YmdHis");
+    public static function send(
+        $phone,
+        $amount = 10,
+        $command = "BusinessPayment",
+        $remarks = "",
+        $occassion = "",
+        $callback = null
+    ) {
+        $env       = parent::$config->env;
+        $phone     = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
+        $phone     = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
+        $phone     = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
         $plaintext = parent::$config->password;
         $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
 
+        $endpoint  = ($env == "live")
+            ? "https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
+            : "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
+
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
-        $password = ($env == "live") ? $password : "Safaricom568!#";
 
         $curl_post_data = array(
             "InitiatorName"      => parent::$config->username,
-            "SecurityCredential" => $password,
+            "SecurityCredential" => ($env == "live") ? $password : "Safaricom568!#",
             "CommandID"          => $command,
             "Amount"             => round($amount),
             "PartyA"             => parent::$config->shortcode,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * These helper functions wrap around the various mpesa API classes for more concise code
+ * These optional helper functions wrap around the various mpesa API classes for more concise code
  */
 
 if (!function_exists("mpesa_setup_mpesa")) {

@@ -9,6 +9,12 @@ class Service
      */
     public static $config;
 
+    /**
+     * Setup global configuration for classes
+     * @param Array $configs Formatted configuration options
+     *
+     * @return void
+     */
     public static function init($configs)
     {
         $base     = (isset($_SERVER["HTTPS"]) ? "https" : "http") . "://" . (isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '');
@@ -22,11 +28,11 @@ class Service
             "username"         => "apitest",
             "password"         => "",
             "passkey"          => "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919",
-            "validation_url"   => $base . "/lipwa/validate",
-            "confirmation_url" => $base . "/lipwa/confirm",
-            "callback_url"     => $base . "/lipwa/reconcile",
-            "timeout_url"      => $base . "/lipwa/timeout",
-            "results_url"      => $base . "/lipwa/results",
+            "validation_url"   => $base . "lipwa/validate",
+            "confirmation_url" => $base . "lipwa/confirm",
+            "callback_url"     => $base . "lipwa/reconcile",
+            "timeout_url"      => $base . "lipwa/timeout",
+            "results_url"      => $base . "lipwa/results",
         );
 
         if (!empty($configs) && (!isset($configs["headoffice"]) || empty($configs["headoffice"]))) {
@@ -36,12 +42,21 @@ class Service
         foreach ($defaults as $key => $value) {
             if (isset($configs[$key])) {
                 $defaults[$key] = $configs[$key];
+            } else {
+                $defaults[$key] = $value;
             }
         }
 
         self::$config = (object) $defaults;
     }
 
+    /**
+     * Perform a GET request to the M-PESA Daraja API
+     * @param String $endpoint Daraja API URL Endpoint
+     * @param String $credentials Formated Auth credentials
+     *
+     * @return string/bool
+     */
     public static function remote_get($endpoint, $credentials = null)
     {
         $curl = curl_init();
@@ -54,6 +69,13 @@ class Service
         return curl_exec($curl);
     }
 
+    /**
+     * Perform a POST request to the M-PESA Daraja API
+     * @param String $endpoint Daraja API URL Endpoint
+     * @param Array $data Formated array of data to send
+     *
+     * @return string/bool
+     */
     public static function remote_post($endpoint, $data = array())
     {
         $token       = self::token();
@@ -77,6 +99,8 @@ class Service
     }
 
     /**
+     * Fetch Token To Authenticate Requests
+     *
      * @return string Access token
      */
     public static function token()
@@ -93,15 +117,22 @@ class Service
     }
 
     /**
-     * @param $transaction
-     * @param $command
-     * @param $remarks
-     * @param $occassion\
+     * Get Status of a Transaction
+     *
+     * @param String $transaction
+     * @param String $command
+     * @param String $remarks
+     * @param String $occassion
      *
      * @return array Result
      */
-    public static function status($transaction, $command = "TransactionStatusQuery", $remarks = "Transaction Status Query", $occasion = "Transaction Status Query", $callback = null)
-    {
+    public static function status(
+        $transaction,
+        $command = "TransactionStatusQuery",
+        $remarks = "Transaction Status Query",
+        $occasion = "Transaction Status Query",
+        $callback = null
+    ) {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
@@ -110,8 +141,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.ke/lipwa/transactionstatus/v1/query"
-            : "https://sandbox.safaricom.co.ke/lipwa/transactionstatus/v1/query";
+            ? "https://api.safaricom.co.kelipwa/transactionstatus/v1/query"
+            : "https://sandbox.safaricom.co.kelipwa/transactionstatus/v1/query";
 
         $curl_post_data = array(
             "Initiator"          => self::$config->username,
@@ -134,17 +165,26 @@ class Service
     }
 
     /**
-     * @param $transaction
-     * @param $amount
-     * @param $receiver
-     * @param $receiver_type
-     * @param $remarks
-     * @param $occassion
+     * Reverse a Transaction
+     *
+     * @param String $transaction
+     * @param Integer $amount
+     * @param Integer $receiver
+     * @param String $receiver_type
+     * @param String $remarks
+     * @param String $occassion
      *
      * @return array Result
      */
-    public static function reverse($transaction, $amount, $receiver, $receiver_type = 3, $remarks = "Transaction Reversal", $occasion = "Transaction Reversal", $callback = null)
-    {
+    public static function reverse(
+        $transaction,
+        $amount,
+        $receiver,
+        $receiver_type = 3,
+        $remarks = "Transaction Reversal",
+        $occasion = "Transaction Reversal",
+        $callback = null
+    ) {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
@@ -153,8 +193,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.ke/lipwa/reversal/v1/request"
-            : "https://sandbox.safaricom.co.ke/lipwa/reversal/v1/request";
+            ? "https://api.safaricom.co.kelipwa/reversal/v1/request"
+            : "https://sandbox.safaricom.co.kelipwa/reversal/v1/request";
 
         $curl_post_data = array(
             "CommandID"              => "TransactionReversal",
@@ -179,14 +219,19 @@ class Service
     }
 
     /**
-     * @param $command
-     * @param $remarks
-     * @param $occassion
+     * Check Account Balance
+     *
+     * @param String $command
+     * @param String $remarks
+     * @param String $occassion
      *
      * @return array Result
      */
-    public static function balance($command, $remarks = "Balance Query", $callback = null)
-    {
+    public static function balance(
+        $command,
+        $remarks = "Balance Query",
+        $callback = null
+    ) {
         $env       = self::$config->env;
         $plaintext = self::$config->password;
         $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
@@ -195,8 +240,8 @@ class Service
         $password = base64_encode($encrypted);
 
         $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.ke/lipwa/accountbalance/v1/query"
-            : "https://sandbox.safaricom.co.ke/lipwa/accountbalance/v1/query";
+            ? "https://api.safaricom.co.kelipwa/accountbalance/v1/query"
+            : "https://sandbox.safaricom.co.kelipwa/accountbalance/v1/query";
 
         $curl_post_data = array(
             "CommandID"          => $command,
@@ -218,7 +263,9 @@ class Service
     }
 
     /**
-     * @param callable $callback Defined function or closure to process data and return true/false
+     * Validate Transaction Data
+     *
+     * @param Callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -229,23 +276,25 @@ class Service
         if (is_null($callback)) {
             return array(
                 "ResultCode" => 0,
-                "ResultDesc" => "Success"
+                "ResultDesc" => "Success",
             );
         } else {
             return call_user_func_array($callback, array($data))
                 ? array(
                     "ResultCode" => 0,
-                    "ResultDesc" => "Success"
+                    "ResultDesc" => "Success",
                 )
                 : array(
                     "ResultCode" => 1,
-                    "ResultDesc" => "Failed"
+                    "ResultDesc" => "Failed",
                 );
         }
     }
 
     /**
-     * @param callable $callback Defined function or closure to process data and return true/false
+     * Confirm Transaction Data
+     *
+     * @param Callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -256,23 +305,25 @@ class Service
         if (is_null($callback)) {
             return array(
                 "ResultCode" => 0,
-                "ResultDesc" => "Success"
+                "ResultDesc" => "Success",
             );
         } else {
             return call_user_func_array($callback, array($data))
                 ? array(
                     "ResultCode" => 0,
-                    "ResultDesc" => "Success"
+                    "ResultDesc" => "Success",
                 )
                 : array(
                     "ResultCode" => 1,
-                    "ResultDesc" => "Failed"
+                    "ResultDesc" => "Failed",
                 );
         }
     }
 
     /**
-     * @param callable $callback Defined function or closure to process data and return true/false
+     * Reconcile Transaction Using Instant Payment Notification from M-PESA
+     *
+     * @param Callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -283,23 +334,25 @@ class Service
         if (is_null($callback)) {
             return array(
                 "ResultCode" => 0,
-                "ResultDesc" => "Service request successful"
+                "ResultDesc" => "Service request successful",
             );
         } else {
             return call_user_func_array($callback, array($response))
                 ? array(
                     "ResultCode" => 0,
-                    "ResultDesc" => "Service request successful"
+                    "ResultDesc" => "Service request successful",
                 )
                 : array(
                     "ResultCode" => 1,
-                    "ResultDesc" => "Service request failed"
+                    "ResultDesc" => "Service request failed",
                 );
         }
     }
 
     /**
-     * @param callable $callback Defined function or closure to process data and return true/false
+     * Process Results of an API Request
+     *
+     * @param Callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -310,23 +363,25 @@ class Service
         if (is_null($callback)) {
             return array(
                 "ResultCode" => 0,
-                "ResultDesc" => "Service request successful"
+                "ResultDesc" => "Service request successful",
             );
         } else {
             return call_user_func_array($callback, array($response))
                 ? array(
                     "ResultCode" => 0,
-                    "ResultDesc" => "Service request successful"
+                    "ResultDesc" => "Service request successful",
                 )
                 : array(
                     "ResultCode" => 1,
-                    "ResultDesc" => "Service request failed"
+                    "ResultDesc" => "Service request failed",
                 );
         }
     }
 
     /**
-     * @param callable $callback Defined function or closure to process data and return true/false
+     * Process Transaction Timeout
+     *
+     * @param Callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -337,17 +392,17 @@ class Service
         if (is_null($callback)) {
             return array(
                 "ResultCode" => 0,
-                "ResultDesc" => "Service request successful"
+                "ResultDesc" => "Service request successful",
             );
         } else {
             return call_user_func_array($callback, array($response))
                 ? array(
                     "ResultCode" => 0,
-                    "ResultDesc" => "Service request successful"
+                    "ResultDesc" => "Service request successful",
                 )
                 : array(
                     "ResultCode" => 1,
-                    "ResultDesc" => "Service request failed"
+                    "ResultDesc" => "Service request failed",
                 );
         }
     }

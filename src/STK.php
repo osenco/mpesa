@@ -7,16 +7,22 @@ use Osen\Mpesa\Service;
 class STK extends Service
 {
     /**
-     * @param $phone The MSISDN sending the funds.
-     * @param $amount The amount to be transacted.
-     * @param $reference Used with M-Pesa PayBills.
-     * @param $description A description of the transaction.
-     * @param $remark Remarks
+     * @param Integer $phone The MSISDN sending the funds.
+     * @param Integer $amount The amount to be transacted.
+     * @param String $reference Used with M-Pesa PayBills.
+     * @param String $description A description of the transaction.
+     * @param String $remark Remarks
      *
      * @return array Response
      */
-    public static function send($phone, $amount, $reference = "ACCOUNT", $description = "Transaction Description", $remark = "Remark", $callback = null)
-    {
+    public static function send(
+        $phone,
+        $amount,
+        $reference = "ACCOUNT",
+        $description = "Transaction Description",
+        $remark = "Remark",
+        $callback = null
+    ) {
         $phone = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
         $phone = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
         $phone = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
@@ -42,7 +48,7 @@ class STK extends Service
             "TransactionDesc"   => $description,
             "Remark"            => $remark,
         );
-        
+
         $response = parent::remote_post($endpoint, $curl_post_data);
         $result   = json_decode($response, true);
 

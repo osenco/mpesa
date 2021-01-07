@@ -1,5 +1,5 @@
 # Sample Controller For Laravel
-## The Mpesa Controller
+## The M-PESA Controller
 We will need a controller to handle MPesa Transactions and save them to a database table of your choice. See [this example](examples/MpesaController.php) for sample code.
 
 ```bash
@@ -16,7 +16,7 @@ use Osen\Mpesa\C2B;
 ```
 
 ### Instantiating The Class
-In your controller"s constructor, instantiate the Mpesa API class you want to use by passing configuration options like below: 
+In your controller"s constructor, instantiate the M-PESA API class you want to use by passing configuration options like below: 
 
 ```php
 C2B::init(
@@ -38,7 +38,7 @@ C2B::init(
 ```
 
 ## Routing and Endpoints
-You can set your Laravel routes so as to create endpoints for interaction between Mpesa and your Laravel installation. Remember to call the respective actions (Mpesa methods) inside your controller methods.
+You can set your Laravel routes so as to create endpoints for interaction between M-PESA and your Laravel installation. Remember to call the respective actions (M-PESA methods) inside your controller methods.
 
 ```php
 Route::prefix("lipwa")->group(function ()
@@ -56,6 +56,6 @@ Route::prefix("lipwa")->group(function ()
 ```
 
 ### CSRF verification
-Remember to add `lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from Mpesa.
+Remember to add `lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from M-PESA.
 
 See [the README](README.md) for making and processing payment requests.
