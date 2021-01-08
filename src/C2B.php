@@ -10,14 +10,14 @@ class C2B extends Service
      * Registers your confirmation and validation URLs to M-Pesa.
      * Whenever M-Pesa receives a transaction on the shortcode, it triggers a validation request against the validation URL and the 3rd party system responds to M-Pesa with a validation response (either a success or an error code).
      * M-Pesa completes or cancels the transaction depending on the validation response it receives from the 3rd party system. A confirmation request of the transaction is then sent by M-Pesa through the confirmation URL back to the 3rd party which then should respond with a success acknowledging the confirmation.
-     * @param String $response_type Response Type
      * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param String $response_type Response Type
      * 
      * @return bool/array
      */
     public static function register(
-        $response_type = "Completed",
-        $callback = null
+        $callback = null,
+        $response_type = "Completed"
     ) {
         $endpoint = (parent::$config->env == "live")
             ? "https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl"

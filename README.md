@@ -87,10 +87,10 @@ C2B::init(
         "username"          => "", // Required for B2B and B2C APIs only
         "password"          => "", // Required for B2B and B2C APIs only
         "passkey"           => "Your Online Passkey",
-        "validation_url"    => "lipwa/validate",
-        "confirmation_url"  => "lipwa/confirm",
-        "callback_url"      => "lipwa/reconcile",
-        "results_url"       => "lipwa/results")
+        "validation_url"    => "api/lipwa/validate",
+        "confirmation_url"  => "api/lipwa/confirm",
+        "callback_url"      => "api/lipwa/reconcile",
+        "results_url"       => "api/lipwa/results")
     )
 );
 ```
@@ -100,10 +100,10 @@ C2B::init(
 ```php
 C2B::init(
     array(
-        "validation_url"    => "lipwa/validate",
-        "confirmation_url"  => "lipwa/confirm",
-        "callback_url"      => "lipwa/reconcile",
-        "results_url"       => "lipwa/results")
+        "validation_url"    => "api/lipwa/validate",
+        "confirmation_url"  => "api/lipwa/confirm",
+        "callback_url"      => "api/lipwa/reconcile",
+        "results_url"       => "api/lipwa/results")
     )
 );
 ```
@@ -173,7 +173,9 @@ Whenever M-Pesa receives a transaction on your shortcode, a validation request i
 These URLs must be HTTPS in production. Validation is an optional feature that needs to be activated on M-Pesa, the owner of the shortcode needs to make this request for activation. This can be done by sending an email to [apisupport@safaricom.co.ke](mailto:apisupport@safaricom.co.ke), or through a chat on the [developer portal](https://developer.safaricom.co.ke).
 
 ####  Register Validation/Confirmation URLs
-Simply call the `register` method of the `C2B` class, optionally passing a callback function to process the response from M-PESA. If no callback URL is supplied, the method will return an array of the response from M-PESA.
+Simply call the `register` method of the `C2B` class, optionally passing a callback function to process the response from M-PESA. If no callback URL is supplied, the method will return an array of the response from M-PESA. 
+
+You can pass an optional second parameter for the response type. This defaults to `Completed`
 
 ```php
 C2B::register();
@@ -244,9 +246,6 @@ C2B::confirm(function ($response){
   return true;
 });
 ```
-
-See [the README](README.md) for making and processing other payment requests.
-
 
 ### Processing Timeouts
 
@@ -471,7 +470,7 @@ C2B::result(function ($response){
 
 ## Helper Functions
 
-You can use the helper function s for more concise code
+You can use the helper functions for more concise code
 
 To configure the class, use the `mpesa_setup_config` function , passing your configuration options as the first argument, and the API you wish to setup(C2B, C2B, B2C, B2B) as the second argument. The API is set to C2B by default.
 
@@ -480,15 +479,15 @@ $config = array(
     "env"               => "sandbox",
     "type"              => 4, // For Paybill, or, 2 for Till, 1	for MSISDN
     "shortcode"         => "174379",
-    "headoffice"          => "174379",
+    "headoffice"        => "174379",
     "key"               => "Your Consumer Key",
     "secret"            => "Your Consumer Secret",
     "username"          => "",
     "passkey"           => "Your Online Passkey",
-    "validation_url"    => "lipwa/validate",
-    "confirmation_url"  => "lipwa/confirm",
-    "callback_url"      => "lipwa/reconcile",
-    "results_url"       => "lipwa/results",
+    "validation_url"    => "api/lipwa/validate",
+    "confirmation_url"  => "api/lipwa/confirm",
+    "callback_url"      => "api/lipwa/reconcile",
+    "results_url"       => "api/lipwa/results",
 );
 mpesa_setup_config($config, "C2B");
 ```

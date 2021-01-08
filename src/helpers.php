@@ -15,7 +15,7 @@ if (!function_exists("mpesa_setup_mpesa")) {
 if (!function_exists("mpesa_setup_stk")) {
     function mpesa_setup_stk($config = [])
     {
-        return Osen\Mpesa\C2B::init($config);
+        return Osen\Mpesa\STK::init($config);
     }
 }
 

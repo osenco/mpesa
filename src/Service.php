@@ -28,11 +28,11 @@ class Service
             "username"         => "apitest",
             "password"         => "",
             "passkey"          => "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919",
-            "validation_url"   => $base . "lipwa/validate",
-            "confirmation_url" => $base . "lipwa/confirm",
-            "callback_url"     => $base . "lipwa/reconcile",
-            "timeout_url"      => $base . "lipwa/timeout",
-            "results_url"      => $base . "lipwa/results",
+            "validation_url"   => $base . "api/lipwa/validate",
+            "confirmation_url" => $base . "api/lipwa/confirm",
+            "callback_url"     => $base . "api/lipwa/reconcile",
+            "timeout_url"      => $base . "api/lipwa/timeout",
+            "results_url"      => $base . "api/lipwa/results",
         );
 
         if (!empty($configs) && (!isset($configs["headoffice"]) || empty($configs["headoffice"]))) {

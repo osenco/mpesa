@@ -28,11 +28,11 @@ C2B::init(
     "key"               => "Your Consumer Key",
     "secret"            => "Your Consumer Secret",
     "passkey"           => "Your Online Passkey",
-    "validation_url"    => url("lipwa/validate"),
-    "confirmation_url"  => url("lipwa/confirm"),
-    "callback_url"      => url("lipwa/reconcile"),
-    "results_url"       => url("lipwa/results"),
-    "timeout_url"       => url("lipwa/timeout"),
+    "validation_url"    => url("api/lipwa/validate"),
+    "confirmation_url"  => url("api/lipwa/confirm"),
+    "callback_url"      => url("api/lipwa/reconcile"),
+    "results_url"       => url("api/lipwa/results"),
+    "timeout_url"       => url("api/lipwa/timeout"),
   )
 );
 ```
@@ -56,6 +56,6 @@ Route::prefix("lipwa")->group(function ()
 ```
 
 ### CSRF verification
-Remember to add `lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from M-PESA.
+Remember to add `api/lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from M-PESA.
 
 See [the README](README.md) for making and processing payment requests.

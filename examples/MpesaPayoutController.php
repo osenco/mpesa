@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Payment;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Osen\Mpesa\B2C;
 
-class MpesaController extends Controller
+class MpesaPayoutController extends Controller
 {
     /**
      * Create a new controller instance.
