@@ -56,6 +56,6 @@ Route::prefix("lipwa")->group(function ()
 ```
 
 ### CSRF verification
-Remember to add `api/lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from M-PESA.
+If need be, add `api/lipwa/*` to the `$except` array in `app/Http/Middleware/VerifyCsrfToken.php` to whitelist your endpoints so they can receive data from M-PESA.
 
 See [the README](README.md) for making and processing payment requests.
