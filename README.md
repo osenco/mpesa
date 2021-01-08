@@ -5,8 +5,14 @@ Intuitive and Comprehensive M-PESA SDK for PHP Applications
 See the [wiki](https://github.com/osenco/mpesa/wiki) for documentation.
 
 ## Credits & Acknowledgements
+<ul>
+<li>
 M-PESA is a service and registered trademark of [Safaricom PLC](https://safaricom.co.ke).
+</li>
+<li>
 "Osen" is a service and registered trademark of [Osen Concepts kenya](https://osen.co.ke).
+</li>
+</ul>
 
 ## Licensing
 This software is released under [MIT License](LICENSE).
