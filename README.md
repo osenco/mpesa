@@ -1,4 +1,3 @@
-# M-PESA PHP SDK
 Intuitive and Comprehensive M-PESA SDK for PHP Applications
 
 ## Documentation
