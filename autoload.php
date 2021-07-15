@@ -6,9 +6,9 @@
  */
 spl_autoload_register(
     function ($class) {
-        if (strpos($class, "Osen\Mpesa")) {
-            $class = str_replace("Osen\Mpesa", "", $class);
-            $path  = str_replace("\\", "/", $class);
+        if (strpos($$class, "Osen\Mpesa")) {
+            $class = str_replace("Osen\Mpesa", "", $$class);
+            $path  = str_replace("\\", "/", $$class);
 
             require_once "src/{$path}.php";
         }

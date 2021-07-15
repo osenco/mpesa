@@ -9,7 +9,7 @@ See the [wiki](https://github.com/osenco/mpesa/wiki) for documentation.
 M-PESA is a service and registered trademark of [Safaricom PLC](https://safaricom.co.ke).
 </li>
 <li>
-"Osen" is a service and registered trademark of [Osen Concepts kenya](https://osen.co.ke).
+"Osen" is a service and registered trademark of [Osen Concepts Kenya](https://osen.co.ke).
 </li>
 </ul>
 

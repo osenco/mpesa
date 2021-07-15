@@ -7,11 +7,11 @@ use Osen\Mpesa\Service;
 class STK extends Service
 {
     /**
-     * @param Integer $phone The MSISDN sending the funds.
-     * @param Integer $amount The amount to be transacted.
-     * @param String $reference Used with M-Pesa PayBills.
-     * @param String $description A description of the transaction.
-     * @param String $remark Remarks
+     * @param string $phone The MSISDN sending the funds.
+     * @param string $amount The amount to be transacted.
+     * @param string $reference Used with M-Pesa PayBills.
+     * @param string $description A description of the transaction.
+     * @param string $remark Remarks
      *
      * @return array Response
      */
@@ -30,12 +30,8 @@ class STK extends Service
         $timestamp = date("YmdHis");
         $password  = base64_encode(parent::$config->shortcode . parent::$config->passkey . $timestamp);
 
-        $endpoint = (parent::$config->env == "live")
-            ? "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-            : "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
-
-        $curl_post_data = array(
-            "BusinessShortCode" => parent::$config->headoffice,
+        $payload = array(
+            "BusinessShortCode" => parent::$config->store,
             "Password"          => $password,
             "Timestamp"         => $timestamp,
             "TransactionType"   => (parent::$config->type == 4) ? "CustomerPayBillOnline" : "CustomerBuyGoodsOnline",
@@ -49,11 +45,11 @@ class STK extends Service
             "Remark"            => $remark,
         );
 
-        $response = parent::remote_post($endpoint, $curl_post_data);
+        $response = parent::post("/stkpush/v1/processrequest", $payload);
         $result   = json_decode($response, true);
 
         return is_null($callback)
             ? $result
-            : \call_user_func_array($callback, array($result));
+            : $callback($result);
     }
 }

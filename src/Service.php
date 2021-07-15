@@ -9,6 +9,9 @@ class Service
      */
     public static $config;
 
+    public static $token;
+    protected static $baseUrl;
+
     /**
      * Setup global configuration for classes
      * @param Array $configs Formatted configuration options
@@ -22,7 +25,7 @@ class Service
             "env"              => "sandbox",
             "type"             => 4,
             "shortcode"        => "174379",
-            "headoffice"       => "174379",
+            "store"            => "174379",
             "key"              => "Your Consumer Key",
             "secret"           => "Your Consumer Secret",
             "username"         => "apitest",
@@ -35,8 +38,8 @@ class Service
             "results_url"      => $base . "api/lipwa/results",
         );
 
-        if (!empty($configs) && (!isset($configs["headoffice"]) || empty($configs["headoffice"]))) {
-            $defaults["headoffice"] = $configs["shortcode"];
+        if (!empty($configs) && (!isset($configs["store"]) || empty($configs["store"]))) {
+            $defaults["store"] = $configs["shortcode"];
         }
 
         foreach ($defaults as $key => $value) {
@@ -48,19 +51,22 @@ class Service
         }
 
         self::$config = (object) $defaults;
+        self::$baseUrl = (self::$config->env == "live")
+            ? "https://api.safaricom.co.ske/mpesa"
+            : "https://sandbox.safaricom.co.ske/mpesa";
     }
 
     /**
      * Perform a GET request to the M-PESA Daraja API
-     * @param String $endpoint Daraja API URL Endpoint
-     * @param String $credentials Formated Auth credentials
+     * @param string $endpoint Daraja API URL Endpoint
+     * @param string $credentials Formated Auth credentials
      *
-     * @return string/bool
+     * @return string
      */
-    public static function remote_get($endpoint, $credentials = null)
+    public static function get($endpoint, $credentials = null)
     {
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
+        curl_setopt($curl, CURLOPT_URL, self::$baseUrl . $endpoint);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization: Basic " . $credentials));
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -71,27 +77,27 @@ class Service
 
     /**
      * Perform a POST request to the M-PESA Daraja API
-     * @param String $endpoint Daraja API URL Endpoint
+     * @param string $endpoint Daraja API URL Endpoint
      * @param Array $data Formated array of data to send
      *
-     * @return string/bool
+     * @return string
      */
-    public static function remote_post($endpoint, $data = array())
+    public static function post($endpoint, $data = array())
     {
-        $token       = self::token();
         $curl        = curl_init();
         $data_string = json_encode($data);
+
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
+        curl_setopt($curl, CURLOPT_URL, self::$baseUrl . $endpoint);
         curl_setopt(
             $curl,
             CURLOPT_HTTPHEADER,
             array(
                 "Content-Type:application/json",
-                "Authorization:Bearer " . $token,
+                "Authorization:Bearer " . self::$token,
             )
         );
 
@@ -99,30 +105,30 @@ class Service
     }
 
     /**
-     * Fetch Token To Authenticate Requests
+     * Fetch $token To Authenticate Requests
      *
-     * @return string Access token
+     * @return string Access $token
      */
-    public static function token()
+    public static function authorize($token = null, callable $callback = null)
     {
-        $endpoint = (self::$config->env == "live")
-            ? "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-            : "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
+        if (is_null($token)) {
+            $credentials = base64_encode(self::$config->key . ":" . self::$config->secret);
+            $response    = self::get("/oauth/v1/generate?grant_type=client_credentials", $credentials);
+            $result      = json_decode($response);
 
-        $credentials = base64_encode(self::$config->key . ":" . self::$config->secret);
-        $response    = self::remote_get($endpoint, $credentials);
-        $result      = json_decode($response);
-
-        return isset($result->access_token) ? $result->access_token : "";
+            self::$token = isset($result->access_token) ? $result->access_token : "";
+        } else {
+            self::$token = $token;
+        }
     }
 
     /**
      * Get Status of a Transaction
      *
-     * @param String $transaction
-     * @param String $command
-     * @param String $remarks
-     * @param String $occassion
+     * @param string $transaction
+     * @param string $command
+     * @param string $remarks
+     * @param string $occassion
      *
      * @return array Result
      */
@@ -140,11 +146,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.kelipwa/transactionstatus/v1/query"
-            : "https://sandbox.safaricom.co.kelipwa/transactionstatus/v1/query";
-
-        $curl_post_data = array(
+        $payload = array(
             "Initiator"          => self::$config->username,
             "SecurityCredential" => $password,
             "CommandID"          => $command,
@@ -156,23 +158,23 @@ class Service
             "Remarks"            => $remarks,
             "Occasion"           => $occasion,
         );
-        $response = self::remote_post($endpoint, $curl_post_data);
+        $response = self::post("/transactionstatus/v1/query", $payload);
         $result   = json_decode($response, true);
 
         return is_null($callback)
             ? $result
-            : \call_user_func_array($callback, array($result));
+            : $callback($result);
     }
 
     /**
      * Reverse a Transaction
      *
-     * @param String $transaction
+     * @param string $transaction
      * @param Integer $amount
      * @param Integer $receiver
-     * @param String $receiver_type
-     * @param String $remarks
-     * @param String $occassion
+     * @param string $receiver_type
+     * @param string $remarks
+     * @param string $occassion
      *
      * @return array Result
      */
@@ -192,11 +194,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.kelipwa/reversal/v1/request"
-            : "https://sandbox.safaricom.co.kelipwa/reversal/v1/request";
-
-        $curl_post_data = array(
+        $payload = array(
             "CommandID"              => "TransactionReversal",
             "Initiator"              => self::$config->business,
             "SecurityCredential"     => $password,
@@ -210,20 +208,20 @@ class Service
             "Occasion"               => $occasion,
         );
 
-        $response = self::remote_post($endpoint, $curl_post_data);
+        $response = self::post("/reversal/v1/request", $payload);
         $result   = json_decode($response, true);
 
         return is_null($callback)
             ? $result
-            : \call_user_func_array($callback, array($result));
+            : $callback($result);
     }
 
     /**
      * Check Account Balance
      *
-     * @param String $command
-     * @param String $remarks
-     * @param String $occassion
+     * @param string $command
+     * @param string $remarks
+     * @param string $occassion
      *
      * @return array Result
      */
@@ -239,11 +237,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $endpoint = ($env == "live")
-            ? "https://api.safaricom.co.kelipwa/accountbalance/v1/query"
-            : "https://sandbox.safaricom.co.kelipwa/accountbalance/v1/query";
-
-        $curl_post_data = array(
+        $payload = array(
             "CommandID"          => $command,
             "Initiator"          => self::$config->username,
             "SecurityCredential" => $password,
@@ -254,18 +248,18 @@ class Service
             "ResultURL"          => self::$config->results_url,
         );
 
-        $response = self::remote_post($endpoint, $curl_post_data);
+        $response = self::post("/accountbalance/v1/query", $payload);
         $result   = json_decode($response, true);
 
         return is_null($callback)
             ? $result
-            : \call_user_func_array($callback, array($result));
+            : $callback($result);
     }
 
     /**
      * Validate Transaction Data
      *
-     * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -294,7 +288,7 @@ class Service
     /**
      * Confirm Transaction Data
      *
-     * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -323,7 +317,7 @@ class Service
     /**
      * Reconcile Transaction Using Instant Payment Notification from M-PESA
      *
-     * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -352,7 +346,7 @@ class Service
     /**
      * Process Results of an API Request
      *
-     * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
@@ -381,7 +375,7 @@ class Service
     /**
      * Process Transaction Timeout
      *
-     * @param Callable $callback Defined function or closure to process data and return true/false
+     * @param callable $callback Defined function or closure to process data and return true/false
      *
      * @return array
      */
