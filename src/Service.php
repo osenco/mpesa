@@ -7,10 +7,9 @@ class Service
     /**
      * @var object $config Configuration options
      */
-    public static $config;
-
-    public static $token;
-    protected static $baseUrl;
+    public static object $config;
+    public static string $token;
+    protected static string $baseUrl;
 
     /**
      * Setup global configuration for classes
@@ -52,8 +51,8 @@ class Service
 
         self::$config = (object) $defaults;
         self::$baseUrl = (self::$config->env == "live")
-            ? "https://api.safaricom.co.ske/mpesa"
-            : "https://sandbox.safaricom.co.ske/mpesa";
+            ? "https://api.safaricom.co.ke/mpesa"
+            : "https://sandbox.safaricom.co.ke/mpesa";
     }
 
     /**
