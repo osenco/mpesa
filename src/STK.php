@@ -30,7 +30,7 @@ class STK extends Service
         $timestamp = date("YmdHis");
         $password  = base64_encode(parent::$config->shortcode . parent::$config->passkey . $timestamp);
 
-        $payload = array(
+        $payload = array (
             "BusinessShortCode" => parent::$config->store,
             "Password"          => $password,
             "Timestamp"         => $timestamp,

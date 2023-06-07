@@ -13,14 +13,14 @@ class Service
 
     /**
      * Setup global configuration for classes
-     * @param Array $configs Formatted configuration options
+     * @param array $configs Formatted configuration options
      *
      * @return void
      */
     public static function init($configs)
     {
         $base     = (isset($_SERVER["HTTPS"]) ? "https" : "http") . "://" . (isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '');
-        $defaults = array(
+        $defaults = array (
             "env"              => "sandbox",
             "type"             => 4,
             "shortcode"        => "174379",
@@ -66,7 +66,7 @@ class Service
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, self::$baseUrl . $endpoint);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization: Basic " . $credentials));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array ("Authorization: Basic " . $credentials));
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -77,11 +77,11 @@ class Service
     /**
      * Perform a POST request to the M-PESA Daraja API
      * @param string $endpoint Daraja API URL Endpoint
-     * @param Array $data Formated array of data to send
+     * @param array $data Formated array of data to send
      *
      * @return string
      */
-    public static function post($endpoint, $data = array())
+    public static function post($endpoint, $data = array ())
     {
         $curl        = curl_init();
         $data_string = json_encode($data);
@@ -94,7 +94,7 @@ class Service
         curl_setopt(
             $curl,
             CURLOPT_HTTPHEADER,
-            array(
+            array (
                 "Content-Type:application/json",
                 "Authorization:Bearer " . self::$token,
             )
@@ -105,8 +105,6 @@ class Service
 
     /**
      * Fetch $token To Authenticate Requests
-     *
-     * @return string Access $token
      */
     public static function authorize($token = null, callable $callback = null)
     {
@@ -145,7 +143,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $payload = array(
+        $payload = array (
             "Initiator"          => self::$config->username,
             "SecurityCredential" => $password,
             "CommandID"          => $command,
@@ -169,8 +167,8 @@ class Service
      * Reverse a Transaction
      *
      * @param string $transaction
-     * @param Integer $amount
-     * @param Integer $receiver
+     * @param int $amount
+     * @param int $receiver
      * @param string $receiver_type
      * @param string $remarks
      * @param string $occassion
@@ -193,7 +191,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $payload = array(
+        $payload = array (
             "CommandID"              => "TransactionReversal",
             "Initiator"              => self::$config->business,
             "SecurityCredential"     => $password,
@@ -236,7 +234,7 @@ class Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $payload = array(
+        $payload = array (
             "CommandID"          => $command,
             "Initiator"          => self::$config->username,
             "SecurityCredential" => $password,
@@ -260,24 +258,24 @@ class Service
      *
      * @param callable $callback Defined function or closure to process data and return true/false
      *
-     * @return array
+     * @return array 
      */
     public static function validate($callback = null)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array(
+            return array (
                 "ResultCode" => 0,
                 "ResultDesc" => "Success",
             );
         } else {
-            return call_user_func_array($callback, array($data))
-                ? array(
+            return call_user_func_array ($callback, array ($data))
+                ? array (
                     "ResultCode" => 0,
                     "ResultDesc" => "Success",
                 )
-                : array(
+                : array (
                     "ResultCode" => 1,
                     "ResultDesc" => "Failed",
                 );
@@ -289,24 +287,24 @@ class Service
      *
      * @param callable $callback Defined function or closure to process data and return true/false
      *
-     * @return array
+     * @return array 
      */
     public static function confirm($callback = null)
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array(
+            return array (
                 "ResultCode" => 0,
                 "ResultDesc" => "Success",
             );
         } else {
-            return call_user_func_array($callback, array($data))
-                ? array(
+            return call_user_func_array ($callback, array ($data))
+                ? array (
                     "ResultCode" => 0,
                     "ResultDesc" => "Success",
                 )
-                : array(
+                : array (
                     "ResultCode" => 1,
                     "ResultDesc" => "Failed",
                 );
@@ -318,24 +316,24 @@ class Service
      *
      * @param callable $callback Defined function or closure to process data and return true/false
      *
-     * @return array
+     * @return array 
      */
     public static function reconcile(callable $callback = null)
     {
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array(
+            return array (
                 "ResultCode" => 0,
                 "ResultDesc" => "Service request successful",
             );
         } else {
-            return call_user_func_array($callback, array($response))
-                ? array(
+            return call_user_func_array ($callback, array ($response))
+                ? array (
                     "ResultCode" => 0,
                     "ResultDesc" => "Service request successful",
                 )
-                : array(
+                : array (
                     "ResultCode" => 1,
                     "ResultDesc" => "Service request failed",
                 );
@@ -346,25 +344,23 @@ class Service
      * Process Results of an API Request
      *
      * @param callable $callback Defined function or closure to process data and return true/false
-     *
-     * @return array
      */
-    public static function results(callable $callback = null)
+    public static function results(callable $callback = null): array
     {
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array(
+            return array (
                 "ResultCode" => 0,
                 "ResultDesc" => "Service request successful",
             );
         } else {
-            return call_user_func_array($callback, array($response))
-                ? array(
+            return call_user_func_array ($callback, array ($response))
+                ? array (
                     "ResultCode" => 0,
                     "ResultDesc" => "Service request successful",
                 )
-                : array(
+                : array (
                     "ResultCode" => 1,
                     "ResultDesc" => "Service request failed",
                 );
@@ -375,25 +371,23 @@ class Service
      * Process Transaction Timeout
      *
      * @param callable $callback Defined function or closure to process data and return true/false
-     *
-     * @return array
      */
-    public static function timeout(callable $callback = null)
+    public static function timeout(callable $callback = null): array
     {
         $response = json_decode(file_get_contents("php://input"), true);
 
         if (is_null($callback)) {
-            return array(
+            return array (
                 "ResultCode" => 0,
                 "ResultDesc" => "Service request successful",
             );
         } else {
-            return call_user_func_array($callback, array($response))
-                ? array(
+            return call_user_func_array ($callback, array ($response))
+                ? array (
                     "ResultCode" => 0,
                     "ResultDesc" => "Service request successful",
                 )
-                : array(
+                : array (
                     "ResultCode" => 1,
                     "ResultDesc" => "Service request failed",
                 );

@@ -13,13 +13,13 @@ class C2B extends Service
      * @param callable $callback Defined function or closure to process data and return true/false
      * @param string $response_type Response Type
      * 
-     * @return bool/array
+     * @return bool/array 
      */
     public static function register(
         $callback = null,
         $response_type = "Completed"
     ) {
-        $payload = array(
+        $payload = array (
             "ShortCode"       => parent::$config->store,
             "ResponseType"    => $response_type,
             "ConfirmationURL" => parent::$config->confirmation_url,
@@ -37,13 +37,13 @@ class C2B extends Service
 
     /**
      * @param string $phone The MSISDN sending the funds.
-     * @param integer $amount The amount to be transacted.
+     * @param int $amount The amount to be transacted.
      * @param string $reference Used with M-Pesa PayBills.
      * @param string $description A description of the transaction.
      * @param string $remark Remarks
      * @param callable $callback Defined function or closure to process data and return true/false
      *
-     * @return array/bool Response
+     * @return array /bool Response
      */
     public static function stk(
         $phone,
@@ -53,14 +53,12 @@ class C2B extends Service
         $remark = "Remark",
         $callback = null
     ) {
-        $phone     = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
-        $phone     = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
-        $phone     = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
+        $phone     = '254'.substr($phone, -9);
 
         $timestamp = date("YmdHis");
         $password  = base64_encode(parent::$config->shortcode . parent::$config->passkey . $timestamp);
 
-        $payload = array(
+        $payload = array (
             "BusinessShortCode" => parent::$config->store,
             "Password"          => $password,
             "Timestamp"         => $timestamp,
@@ -87,12 +85,12 @@ class C2B extends Service
      * Simulates a C2B request
      * 
      * @param string $phone Receiving party phone
-     * @param integer $amount Amount to transfer
+     * @param int $amount Amount to transfer
      * @param string $command Command ID
      * @param string $reference
      * @param callable $callback Defined function or closure to process data and return true/false
      *
-     * @return array
+     * @return array 
      */
     public static function simulate(
         $phone = null,
@@ -101,11 +99,9 @@ class C2B extends Service
         $command = "",
         callable $callback = null
     ) {
-        $phone = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
-        $phone = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
-        $phone = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
+        $phone     = '254'.substr($phone, -9);
 
-        $payload = array(
+        $payload = array (
             "ShortCode"     => parent::$config->shortcode,
             "CommandID"     => $command,
             "Amount"        => round($amount),

@@ -14,7 +14,7 @@ class B2C extends Service
      * @param $occassion
      * @param $remarks
      *
-     * @return array
+     * @return array 
      */
     public static function send(
         $phone,
@@ -25,16 +25,14 @@ class B2C extends Service
         callable $callback = null
     ) {
         $env       = parent::$config->env;
-        $phone     = (substr($phone, 0, 1) == "+") ? str_replace("+", "", $phone) : $phone;
-        $phone     = (substr($phone, 0, 1) == "0") ? preg_replace("/^0/", "254", $phone) : $phone;
-        $phone     = (substr($phone, 0, 1) == "7") ? "254{$phone}" : $phone;
+        $phone     = '254'.substr($phone, -9);
         $plaintext = parent::$config->password;
         $publicKey = file_get_contents(__DIR__ . "/certs/{$env}/cert.cer");
 
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $payload  = array(
+        $payload  = array (
             "InitiatorName"      => parent::$config->username,
             "SecurityCredential" => ($env == "live") ? $password : "Safaricom568!#",
             "CommandID"          => $command,

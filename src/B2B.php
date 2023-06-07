@@ -15,7 +15,7 @@ class B2B extends Service
      * @param $reference Account Reference mandatory for “BusinessPaybill” CommandID.
      * @param $remarks
      *
-     * @return array
+     * @return array 
      */
     public static function send(
         $receiver,
@@ -33,7 +33,7 @@ class B2B extends Service
         openssl_public_encrypt($plaintext, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
         $password = base64_encode($encrypted);
 
-        $payload = array(
+        $payload = array (
             "Initiator"              => parent::$config->username,
             "SecurityCredential"     => $password,
             "CommandID"              => $command,
